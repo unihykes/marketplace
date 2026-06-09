@@ -14,7 +14,7 @@
   "skills": "./skills",
   "mcpServers": "./.mcp.json",
   "apps": "./.app.json",
-  "hooks": "./hooks/windows/hooks.json",
+  "hooks": "./hooks/hooks.json",
   "interface": {
     "displayName": "r2u",
     "shortDescription": "r2u short desc",
