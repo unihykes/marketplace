@@ -1,0 +1,14 @@
+{
+  "name": "r2u",
+  "version": "1.0.1",
+  "description": "r2u plugin for cross-repo development",
+  "author": {
+    "name": "unihykes",
+    "email": "todo",
+    "url": "todo"
+  },
+  "homepage": "https://github.com/unihykes/marketplace.git",
+  "repository": "https://github.com/unihykes/marketplace.git",
+  "license": "todo",
+  "skills": "skills"
+}
