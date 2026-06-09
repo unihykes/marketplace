@@ -10,5 +10,27 @@
   "homepage": "https://github.com/unihykes/marketplace.git",
   "repository": "https://github.com/unihykes/marketplace.git",
   "license": "todo",
-  "skills": "skills"
+  "keywords": ["rdy2u", "r2u"],
+  "skills": "./skills",
+  "mcpServers": "./.mcp.json",
+  "apps": "./.app.json",
+  "hooks": "./hooks/windows/hooks.json",
+  "interface": {
+    "displayName": "r2u",
+    "shortDescription": "r2u short desc",
+    "longDescription": "r2u long desc",
+    "developerName": "unihykes",
+    "category": "Productivity",
+    "capabilities": ["Read", "Write"],
+    "websiteURL": "https://github.com/unihykes/marketplace.git",
+    "privacyPolicyURL": "https://github.com/unihykes/marketplace.git",
+    "termsOfServiceURL": "https://github.com/unihykes/marketplace.git",
+    "defaultPrompt": [
+      "use r2u plugin"
+    ],
+    "brandColor": "#10A37F",
+    "composerIcon": "./assets/icon.png",
+    "logo": "./assets/logo.png",
+    "screenshots": ["./assets/screenshot-1.png"]
+  }
 }
