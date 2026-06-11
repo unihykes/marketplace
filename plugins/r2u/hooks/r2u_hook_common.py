@@ -14,7 +14,7 @@ RUNTIME_DIR = Path(__file__).resolve().parent
 
 
 def pretty_uuid(id_val: Any) -> str:
-    """将 UUID 简写为首段，便于日志展示。"""
+    """将 ID 简写为首段，便于日志展示。"""
     if id_val is None:
         return ""
     s = str(id_val).strip()
@@ -25,12 +25,11 @@ def pretty_uuid(id_val: Any) -> str:
 
 def pretty_string(node: str, prop_name: str, mask_keys: AbstractSet[str]) -> str:
     """对命中 ``mask_keys`` 的字符串做日志友好截断。
-
     - ``prop_name`` 不在 ``mask_keys`` 中：原样返回。
     - 命中且 UTF-8 字节数不超过 ``limit``：原样返回。
     - 命中且超过 ``limit``：按 UTF-8 安全截断至该长度（``errors='ignore'`` 丢弃尾部
       不完整续字节，避免中文/Emoji 乱码），输出 ``<前缀>...+<剩余字节数>``；其中
-      ``剩余 = 总字节 - 实际前缀字节数``，保证 ``前缀字节数 + 剩余 == 总字节数``。
+      ``剩余 = 总字节数 - 实际前缀字节数``，保证 ``前缀字节数 + 剩余 == 总字节数``。
     """
     limit = 128
     if prop_name not in mask_keys:
@@ -103,9 +102,9 @@ def fallback_duration(text: str) -> Optional[float]:
         return None
 
 
-def fallback_workspace_leaf(text: str) -> Optional[str]:
-    """回退提取首个 workspace 路径并返回目录名。"""
-    cap = re_capture(text, r'"workspace_roots"\s*:\s*\[\s*"([^"]*)"')
+def fallback_cwd_leaf(text: str) -> Optional[str]:
+    """回退提取 cwd 路径并返回目录名。"""
+    cap = re_capture(text, r'"cwd"\s*:\s*"([^"]*)"')
     if not cap:
         return None
     normalized = cap.rstrip("/")
@@ -123,26 +122,22 @@ def get_hook_project_log_path(log_date: str) -> Path:
     dd = log_date.strip() or datetime.now().strftime("%Y-%m-%d")
     return log_dir / f"r2u_hook_event_{dd}.log"
 
-# 字段	类型	描述	
-# conversation_id	string	跨多轮对话保持稳定的会话 ID	
-# generation_id	string	会随着每条用户消息变化的当前生成 ID	
-# model	string	触发该 hook 的 composer 所配置的模型	
-# hook_event_name	string	当前正在运行的 hook	
-# cursor_version	string	Cursor 应用版本 (例如 "1.7.2")	
-# workspace_roots	string[]	工作区中的根文件夹列表 (通常只有一个，但多根工作区可能有多个)	
-# user_email	string	null	已认证用户的电子邮箱地址 (如果可用)
-# transcript_path	string	null	主会话记录文件的路径 (如果禁用了会话记录，则为 null)
+
+# Codex Hook 通用 head 字段:
+# Field            Type          Meaning
+# session_id       string        Current Codex session id. Subagent hooks use the parent session id.
+# transcript_path  string|null   Path to the session transcript file, if any
+# cwd              string        Working directory for the session
+# hook_event_name  string        Current hook event name
+# model            string        Codex-specific extension. Active model slug
 class R2eHookInputHead:
     def __init__(self) -> None:
         """初始化 Hook 头部字段，先填充默认占位值。"""
         self.captured_at: datetime = datetime.now()
-        self.conversation_id: str = "-"
-        self.generation_id: str = "-"
+        self.session_id: str = "-"
         self.model: str = "-"
         self.hook_event_name: str = "-"
-        self.cursor_version: str = "-"
-        self.workspace_root: str = "-"
-        self.user_email: Optional[str] = None
+        self.cwd: str = "-"
         self.transcript_path: Optional[str] = None
         self.is_valid_Json: bool = True
 
@@ -150,21 +145,28 @@ class R2eHookInputHead:
         """返回日期字符串。"""
         return self.captured_at.strftime("%Y-%m-%d")
 
+    def cwd_leaf(self) -> str:
+        """返回 cwd 的最后一级目录名，用于日志前缀。"""
+        if self.cwd == "-":
+            return "-"
+        normalized = self.cwd.rstrip("/")
+        leaf = os.path.basename(normalized)
+        return leaf or self.cwd
+
     def to_log_prefix(self) -> str:
-        """生成日志前缀，拼接时间与核心上下文字段（仅含当日时刻 ``HH:MM:SS``，不含日期）。"""
+        """生成日志前缀，拼接时刻与核心上下文字段（仅含当日时刻 ``HH:MM:SS``，不含日期）。"""
         ts = self.captured_at.strftime("%H:%M:%S")
         return (
             f"[{ts}]"
-            f"[{self.workspace_root}]"
-            f"[{pretty_uuid(self.conversation_id)}]"
-            f"[{pretty_uuid(self.generation_id)}]"
+            f"[{self.cwd_leaf()}]"
+            f"[{pretty_uuid(self.session_id)}]"
             f"[{self.model}]"
             f"[{self.hook_event_name}]"
         )
 
 
 def get_hook_input_head_and_body(raw_input: Optional[str] = None) -> Tuple[R2eHookInputHead, str]:
-    """解析 Hook 输入并拆分头部信息与正文字符串。"""
+    """解析 Hook 输入并拆分手部信息与正文字符串。"""
     head = R2eHookInputHead()
     if raw_input is None:
         raw_input = sys.stdin.read()
@@ -183,38 +185,15 @@ def get_hook_input_head_and_body(raw_input: Optional[str] = None) -> Tuple[R2eHo
         if not isinstance(obj, dict):
             raise ValueError("root not object")
 
-        if isinstance(obj.get("conversation_id"), str):
-            head.conversation_id = obj.pop("conversation_id")
-        if isinstance(obj.get("generation_id"), str):
-            head.generation_id = obj.pop("generation_id")
+        # Codex head 字段提取
+        if isinstance(obj.get("session_id"), str):
+            head.session_id = obj.pop("session_id")
         if isinstance(obj.get("model"), str):
             head.model = obj.pop("model")
         if isinstance(obj.get("hook_event_name"), str):
             head.hook_event_name = obj.pop("hook_event_name")
-
-        if "workspace_roots" in obj:
-            wr = obj.pop("workspace_roots")
-            first = None
-            if isinstance(wr, list) and wr:
-                first = str(wr[0])
-            elif isinstance(wr, str):
-                first = wr
-            if first and first.strip():
-                normalized = first.rstrip("/")
-                leaf = os.path.basename(normalized)
-                if leaf:
-                    head.workspace_root = leaf
-
-        if "cursor_version" in obj:
-            v = obj.pop("cursor_version")
-            if isinstance(v, str):
-                head.cursor_version = v if v else "-"
-        if "user_email" in obj:
-            v = obj.pop("user_email")
-            if v is None:
-                head.user_email = None
-            elif isinstance(v, str):
-                head.user_email = v if v else None
+        if isinstance(obj.get("cwd"), str):
+            head.cwd = obj.pop("cwd")
         if "transcript_path" in obj:
             v = obj.pop("transcript_path")
             if v is None:
@@ -226,30 +205,22 @@ def get_hook_input_head_and_body(raw_input: Optional[str] = None) -> Tuple[R2eHo
     except Exception:
         head.is_valid_Json = False
         body_str = raw_input
-        c = fallback_quoted(raw_input, "conversation_id")
+        # 回退提取 Codex head 字段
+        c = fallback_quoted(raw_input, "session_id")
         if c is not None:
-            head.conversation_id = c
-        c = fallback_quoted(raw_input, "generation_id")
-        if c is not None:
-            head.generation_id = c
+            head.session_id = c
         c = fallback_quoted(raw_input, "model")
         if c is not None:
             head.model = c
         c = fallback_quoted(raw_input, "hook_event_name")
         if c is not None:
             head.hook_event_name = c
-        c = fallback_quoted(raw_input, "cursor_version")
+        c = fallback_quoted(raw_input, "cwd")
         if c is not None:
-            head.cursor_version = c if c else "-"
-        c = fallback_quoted(raw_input, "user_email")
-        if c is not None:
-            head.user_email = c if c else None
+            head.cwd = c
         c = fallback_quoted(raw_input, "transcript_path")
         if c is not None:
             head.transcript_path = c if c else None
-        leaf = fallback_workspace_leaf(raw_input)
-        if leaf:
-            head.workspace_root = leaf
 
     return head, body_str
 
