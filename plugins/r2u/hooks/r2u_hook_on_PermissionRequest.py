@@ -4,34 +4,31 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 import json
 import sys
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import r2u_hook_common as c
 
-_LOG_MASK_KEYS: frozenset[str] = frozenset()
 
-
-def _mask_tree_for_log(node: Any, prop_name: str = "") -> Any:
-    if node is None:
-        return None
-    if isinstance(node, str):
-        return c.pretty_string(node, prop_name, _LOG_MASK_KEYS)
-    if isinstance(node, bool) or isinstance(node, (int, float)):
-        return node
-    if isinstance(node, dict):
-        return {k: _mask_tree_for_log(v, k) for k, v in node.items()}
-    if isinstance(node, list):
-        return [_mask_tree_for_log(x, prop_name) for x in node]
-    return node
-
-
-# TODO: 待补充 PermissionRequest 的输入字段定
+# Field	Type	Meaning
+# turn_id	string	Codex-specific extension. Active Codex turn id
+# tool_name	string	Canonical hook tool name, such as Bash, apply_patch, or an MCP name like mcp__fs__read
+# tool_input	JSON value	Tool-specific input. Bash and apply_patch use tool_input.command while MCP tools send all the args.
+# tool_input.description	string | null	Human-readable approval reason, when Codex has one
+# 备注: turn_id 已在 R2eHookInputHead 中解析
 @dataclass
 class R2eHookPermissionRequestInputBody:
+    tool_name: Optional[str] = None
+    tool_input: Optional[Any] = None
     others: Dict[str, Any] = field(default_factory=dict)
 
     def to_string(self) -> str:
-        return "\n" + json.dumps(_mask_tree_for_log(self.others), ensure_ascii=False, indent=2)
+        payload: Dict[str, Any] = {
+            "tool_name": self.tool_name,
+            "tool_input": self.tool_input,
+        }
+        if self.others:
+            payload["others"] = self.others
+        return "\n" + json.dumps(payload, ensure_ascii=False, indent=2)
 
 
 def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookPermissionRequestInputBody]:
@@ -41,6 +38,7 @@ def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookPermissionRequestI
     if not str(body_str).strip():
         return head, inst
     if not hv:
+        inst.tool_name = c.fallback_quoted(body_str, "tool_name")
         inst.others = c.invalid_others()
         return head, inst
     try:
@@ -51,16 +49,39 @@ def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookPermissionRequestI
         inst.others = c.invalid_others()
         return head, inst
 
-    # TODO: ´ý²¹³ä¾ßÌå×Ö¶Î½âÎö
+    if "tool_name" in obj:
+        inst.tool_name = obj.pop("tool_name")
+    if "tool_input" in obj:
+        inst.tool_input = obj.pop("tool_input")
     if obj:
         inst.others = dict(obj)
     return head, inst
 
 
 # PreToolUse and PermissionRequest support systemMessage, 
-# but continue, stopReason, and suppressOutput aren’t currently supported for those events. 
+# but continue, stopReason, and suppressOutput aren't currently supported for those events. 
 # If a PreToolUse hook returns one of those unsupported fields, Codex marks that hook run as failed, 
 # reports the error, and continues the tool call.
+# 批准请求
+#{
+#  "hookSpecificOutput": {
+#    "hookEventName": "PermissionRequest",
+#    "decision": {
+#      "behavior": "allow"
+#    }
+#  }
+#}
+# 拒绝请求
+#{
+#  "hookSpecificOutput": {
+#    "hookEventName": "PermissionRequest",
+#    "decision": {
+#      "behavior": "deny",
+#      "message": "Blocked by repository policy."
+#    }
+#  }
+#}
+# 不决策 : 既不不批准, 也不拒绝, 将使用常规的批准流程。
 def build_hook_response() -> str:
     return json.dumps({}, ensure_ascii=False, indent=2)
 
