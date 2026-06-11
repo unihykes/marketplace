@@ -167,7 +167,9 @@ class R2eHookInputHead:
             f"[{ts}]"
             f"[{self.cwd_leaf()}]"
             f"[{pretty_uuid(self.session_id)}]"
+            f"[{pretty_uuid(self.turn_id)}]"
             f"[{self.model}]"
+            f"[{self.permission_mode}]"
             f"[{self.hook_event_name}]"
             f"[{self.transcript_path}]"
         )
