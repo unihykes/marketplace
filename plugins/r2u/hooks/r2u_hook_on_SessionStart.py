@@ -8,41 +8,21 @@ from typing import Any, Dict, Optional
 
 import r2u_hook_common as c
 
-_LOG_MASK_KEYS: frozenset[str] = frozenset()
 
-
-def _mask_tree_for_log(node: Any, prop_name: str = "") -> Any:
-    if node is None:
-        return None
-    if isinstance(node, str):
-        return c.pretty_string(node, prop_name, _LOG_MASK_KEYS)
-    if isinstance(node, bool) or isinstance(node, (int, float)):
-        return node
-    if isinstance(node, dict):
-        return {k: _mask_tree_for_log(v, k) for k, v in node.items()}
-    if isinstance(node, list):
-        return [_mask_tree_for_log(x, prop_name) for x in node]
-    return node
-
-
-# 输入字段	类型	描述
-# session_id	string	此会话的唯一标识符 (与 conversation_id 相同)
-# is_background_agent	boolean	该会话是后台 agent 会话还是交互式会话
-# composer_mode	string (optional)	composer 启动时的模式 (例如 "agent"、"ask"、"edit")
+# Field	Type	Meaning
+# source	string	How the session started: startup, resume, clear, or compact
 @dataclass
 class R2eHookSessionStartInputBody:
-    is_background_agent: bool = False
-    composer_mode: Optional[Any] = None
+    source: Optional[str] = None
     others: Dict[str, Any] = field(default_factory=dict)
 
     def to_string(self) -> str:
         payload: Dict[str, Any] = {
-            "is_background_agent": self.is_background_agent,
-            "composer_mode": self.composer_mode,
+            "source": self.source,
         }
         if self.others:
             payload["others"] = self.others
-        return "\n" + json.dumps(_mask_tree_for_log(payload), ensure_ascii=False, indent=2)
+        return "\n" + json.dumps(payload, ensure_ascii=False, indent=2)
 
 
 def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookSessionStartInputBody]:
@@ -52,10 +32,7 @@ def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookSessionStartInputB
     if not str(body_str).strip():
         return head, inst
     if not hv:
-        ib = c.fallback_bool(body_str, "is_background_agent")
-        if ib is not None:
-            inst.is_background_agent = ib
-        inst.composer_mode = c.fallback_quoted(body_str, "composer_mode")
+        inst.source = c.fallback_quoted(body_str, "source")
         inst.others = c.invalid_others()
         return head, inst
     try:
@@ -66,13 +43,8 @@ def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookSessionStartInputB
         inst.others = c.invalid_others()
         return head, inst
 
-    if "session_id" in obj:
-        obj.pop("session_id")
-    if "is_background_agent" in obj:
-        inst.is_background_agent = bool(obj.pop("is_background_agent"))
-    if "composer_mode" in obj:
-        v = obj.pop("composer_mode")
-        inst.composer_mode = v if isinstance(v, str) else v
+    if "source" in obj:
+        inst.source = obj.pop("source")
     if obj:
         inst.others = dict(obj)
     return head, inst
