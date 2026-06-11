@@ -29,171 +29,62 @@ def _mask_tree_for_log(node: Any, prop_name: str = "") -> Any:
     return node
 
 
-def _parse_tool_output_for_log(text: str) -> Any:
-    """将 tool_output 从「可能多层 JSON 字符串套娃」解成 Python 对象，再掩码；供外层 json.dumps 一次编码。
-
-    若 ``text`` 不是合法 JSON，则仍按字符串做掩码后返回，由外层正常转义。
-    """
-    if text is None:
-        return None
-    s = str(text).strip()
-    if not s:
-        return s
-    cur: Any = s
-    for _ in range(8):
-        if not isinstance(cur, str):
-            break
-        try:
-            cur = json.loads(cur)
-        except Exception:
-            break
-    return _mask_tree_for_log(cur)
-
-
-# 输入字段        类型    描述
-# session_id      string  此会话的唯一标识符 (与 conversation_id 相同)
-# tool_name       string  即将使用的工具名称
-# tool_use_id     string  调用标识
-# cwd             string  当前工作目录
-# duration        number  工具调用耗时（毫秒）
-# model           string  模型标识
-# tool_input      object  工具调用参数对象
-# tool_output	string	工具返回结果负载的 JSON 字符串 (不是原始终端文本)
+# Field	Type	Meaning
+# turn_id	string	Codex-specific extension. Active Codex turn id
+# tool_name	string	Canonical hook tool name, such as Bash, apply_patch, or an MCP name like mcp__fs__read
+# tool_use_id	string	Tool-call id for this invocation
+# tool_input	JSON value	Tool-specific input. Bash and apply_patch use tool_input.command while MCP tools send all arguments.
+# tool_response	JSON value	Tool-specific output. For MCP tools, this is the MCP call result.
+# 备注: turn_id 已在 R2eHookInputHead 中解析
 @dataclass
 class R2eHookPostToolUseInputBody:
-    cwd: Optional[Any] = None
-    tool_name: Optional[Any] = None
+    tool_name: Optional[str] = None
+    tool_use_id: Optional[str] = None
     tool_input: Optional[Any] = None
-    tool_output: Optional[str] = None
-    duration: Optional[Any] = None
+    tool_response: Optional[Any] = None
     others: Dict[str, Any] = field(default_factory=dict)
-    model: Optional[Any] = None
-    tool_use_id: Optional[Any] = None
 
     def to_string(self) -> str:
-        payload: Dict[str, Any] = {}
-        if self.cwd is not None:
-            payload["cwd"] = self.cwd
-        if self.tool_input is not None:
-            payload["tool_input"] = self.tool_input
-        if self.tool_output is not None:
-            payload["tool_output"] = _parse_tool_output_for_log(self.tool_output)
-        if self.duration is not None:
-            payload["duration"] = self.duration
-        if self.model is not None:
-            payload["model"] = self.model
+        payload: Dict[str, Any] = {
+            "tool_name": self.tool_name,
+            "tool_use_id": self.tool_use_id,
+            "tool_input": self.tool_input,
+            "tool_response": self.tool_response,
+        }
         if self.others:
             payload["others"] = self.others
-        body = json.dumps(_mask_tree_for_log(payload), ensure_ascii=False, indent=2)
-        prefix = ""
-        if self.tool_use_id is not None and str(self.tool_use_id).strip():
-            prefix += f"[{self.tool_use_id}]"
-        if self.tool_name is not None and str(self.tool_name).strip():
-            prefix += f"[{self.tool_name}]"
-        if prefix:
-            return f"{prefix}\n{body}"
-        return f"\n{body}"
+        return "\n" + json.dumps(_mask_tree_for_log(payload), ensure_ascii=False, indent=2)
 
 
 def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookPostToolUseInputBody]:
     head, body_str = c.get_hook_input_head_and_body()
     inst = R2eHookPostToolUseInputBody()
-    while True:
-        hv = head.is_valid_Json
-        empty = {
-            "tool_name": None,
-            "tool_use_id": None,
-            "cwd": None,
-            "duration": 0.0,
-            "model": None,
-            "tool_input": {},
-            "tool_output": None,
-        }
-        if not str(body_str).strip():
-            out = empty
-            if isinstance(out, dict):
-                for k, v in out.items():
-                    if hasattr(inst, k):
-                        setattr(inst, k, v)
-                    else:
-                        inst.others[k] = v
-            else:
-                inst.others = {"_value": out}
-            break
-        if not hv:
-            d = dict(empty)
-            d.update({
-                "tool_name": c.fallback_quoted(body_str, "tool_name"),
-                "tool_use_id": c.pretty_uuid(c.fallback_quoted(body_str, "tool_use_id") or ""),
-                "cwd": c.fallback_quoted(body_str, "cwd"),
-                "model": c.fallback_quoted(body_str, "model"),
-                "duration": c.fallback_duration(body_str) or 0.0,
-                "others": c.invalid_others(),
-            })
-            out = d
-            if isinstance(out, dict):
-                for k, v in out.items():
-                    if hasattr(inst, k):
-                        setattr(inst, k, v)
-                    else:
-                        inst.others[k] = v
-            else:
-                inst.others = {"_value": out}
-            break
-        try:
-            obj = json.loads(body_str)
-            if not isinstance(obj, dict):
-                raise ValueError("not object")
-        except Exception:
-            out = {"tool_input": {}, "tool_output": None, "others": c.invalid_others()}
-            if isinstance(out, dict):
-                for k, v in out.items():
-                    if hasattr(inst, k):
-                        setattr(inst, k, v)
-                    else:
-                        inst.others[k] = v
-            else:
-                inst.others = {"_value": out}
-            break
-        others: Dict[str, Any] = {}
-        out = dict(empty)
-        if "session_id" in obj:
-            obj.pop("session_id")
-        for k in ("tool_name", "cwd", "model"):
-            if k in obj:
-                v = obj.pop(k)
-                out[k] = str(v) if v is not None else None
-        if "tool_use_id" in obj:
-            out["tool_use_id"] = c.pretty_uuid(str(obj.pop("tool_use_id")))
-        if "duration" in obj:
-            try:
-                out["duration"] = float(obj.pop("duration"))
-            except (TypeError, ValueError):
-                obj.pop("duration", None)
-        if "tool_input" in obj:
-            out["tool_input"] = obj.pop("tool_input")
-        if "tool_output" in obj:
-            raw_out = obj.pop("tool_output")
-            if raw_out is None:
-                out["tool_output"] = None
-            elif isinstance(raw_out, str):
-                out["tool_output"] = raw_out
-            else:
-                out["tool_output"] = json.dumps(raw_out, ensure_ascii=False, indent=2)
-        for k, v in obj.items():
-            others[k] = v
-        if others:
-            out["others"] = others
-        out = out
-        if isinstance(out, dict):
-            for k, v in out.items():
-                if hasattr(inst, k):
-                    setattr(inst, k, v)
-                else:
-                    inst.others[k] = v
-        else:
-            inst.others = {"_value": out}
-        break
+    hv = head.is_valid_Json
+    if not str(body_str).strip():
+        return head, inst
+    if not hv:
+        inst.tool_name = c.fallback_quoted(body_str, "tool_name")
+        inst.tool_use_id = c.fallback_quoted(body_str, "tool_use_id")
+        inst.others = c.invalid_others()
+        return head, inst
+    try:
+        obj = json.loads(body_str)
+        if not isinstance(obj, dict):
+            raise ValueError("body not object")
+    except Exception:
+        inst.others = c.invalid_others()
+        return head, inst
+
+    if "tool_name" in obj:
+        inst.tool_name = obj.pop("tool_name")
+    if "tool_use_id" in obj:
+        inst.tool_use_id = obj.pop("tool_use_id")
+    if "tool_input" in obj:
+        inst.tool_input = obj.pop("tool_input")
+    if "tool_response" in obj:
+        inst.tool_response = obj.pop("tool_response")
+    if obj:
+        inst.others = dict(obj)
     return head, inst
 
 
@@ -206,6 +97,15 @@ def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookPostToolUseInputBo
 # PostToolUse supports systemMessage, continue: false, and stopReason. 
 # suppressOutput is parsed but not currently supported for that event.
 
+# 额外字段
+#{
+#  "decision": "block",
+#  "reason": "The Bash output needs review before continuing.",
+#  "hookSpecificOutput": {
+#    "hookEventName": "PostToolUse",
+#    "additionalContext": "The command updated generated files."
+#  }
+#}
 def build_hook_response() -> str:
     return json.dumps({"continue": True}, ensure_ascii=False, indent=2)
 
