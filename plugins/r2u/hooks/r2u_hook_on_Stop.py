@@ -8,7 +8,7 @@ from typing import Any, Dict, Optional
 
 import r2u_hook_common as c
 
-_LOG_MASK_KEYS: frozenset[str] = frozenset()
+_LOG_MASK_KEYS = frozenset({"last_assistant_message"})
 
 
 def _mask_tree_for_log(node: Any, prop_name: str = "") -> Any:
@@ -25,31 +25,20 @@ def _mask_tree_for_log(node: Any, prop_name: str = "") -> Any:
     return node
 
 
-# Input
-# session_id（可选）：此会话唯一标识，常与 conversation_id 相同。
-# output_tokens / input_tokens / cache_*：Cursor 可能在 stop 载荷中附带用量统计。
-# {
-#   "status": "completed" | "aborted" | "error",
-#   "loop_count": 0
-# }
+# Field	Type	Meaning
+# turn_id	string	Codex-specific extension. Active Codex turn id
+# stop_hook_active	boolean	Whether this turn was already continued by Stop
+# last_assistant_message	string | null	Latest assistant message text, if available
 @dataclass
 class R2eHookStopInputBody:
-    status: Optional[str] = None
-    loop_count: int = 0
-    output_tokens: int = 0
-    input_tokens: int = 0
-    cache_read_tokens: int = 0
-    cache_write_tokens: int = 0
+    stop_hook_active: bool = False
+    last_assistant_message: Optional[str] = None
     others: Dict[str, Any] = field(default_factory=dict)
 
     def to_string(self) -> str:
         payload: Dict[str, Any] = {
-            "status": self.status,
-            "loop_count": self.loop_count,
-            "output_tokens": self.output_tokens,
-            "input_tokens": self.input_tokens,
-            "cache_read_tokens": self.cache_read_tokens,
-            "cache_write_tokens": self.cache_write_tokens,
+            "stop_hook_active": self.stop_hook_active,
+            "last_assistant_message": self.last_assistant_message,
         }
         if self.others:
             payload["others"] = self.others
@@ -63,12 +52,8 @@ def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookStopInputBody]:
     if not str(body_str).strip():
         return head, inst
     if not hv:
-        inst.status = c.fallback_quoted(body_str, "status")
-        inst.loop_count = c.fallback_long(body_str, "loop_count") or 0
-        inst.output_tokens = c.fallback_long(body_str, "output_tokens") or 0
-        inst.input_tokens = c.fallback_long(body_str, "input_tokens") or 0
-        inst.cache_read_tokens = c.fallback_long(body_str, "cache_read_tokens") or 0
-        inst.cache_write_tokens = c.fallback_long(body_str, "cache_write_tokens") or 0
+        inst.stop_hook_active = c.fallback_bool(body_str, "stop_hook_active") or False
+        inst.last_assistant_message = c.fallback_quoted(body_str, "last_assistant_message")
         inst.others = c.invalid_others()
         return head, inst
     try:
@@ -79,22 +64,11 @@ def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookStopInputBody]:
         inst.others = c.invalid_others()
         return head, inst
 
-    if "session_id" in obj:
-        obj.pop("session_id")
-    if "status" in obj:
-        v = obj.pop("status")
-        inst.status = str(v) if v is not None else None
-    if "loop_count" in obj:
-        try:
-            inst.loop_count = int(obj.pop("loop_count"))
-        except (TypeError, ValueError):
-            obj.pop("loop_count", None)
-    for tf in ("output_tokens", "input_tokens", "cache_read_tokens", "cache_write_tokens"):
-        if tf in obj:
-            try:
-                setattr(inst, tf, int(obj.pop(tf)))
-            except (TypeError, ValueError):
-                obj.pop(tf, None)
+    if "stop_hook_active" in obj:
+        inst.stop_hook_active = bool(obj.pop("stop_hook_active"))
+    if "last_assistant_message" in obj:
+        v = obj.pop("last_assistant_message")
+        inst.last_assistant_message = str(v) if v is not None else None
     if obj:
         inst.others = dict(obj)
     return head, inst
@@ -105,6 +79,13 @@ def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookStopInputBody]:
 # stopReason	Recorded as the reason for stopping
 # systemMessage	Surfaced as a warning in the UI or event stream
 # suppressOutput	Parsed today but not yet implemented
+
+# 阻止 agent 停止（即继续运行）
+#{
+#  "decision": "block",
+#  "reason": "Run one more pass over the failing tests."
+#}
+
 def build_hook_response() -> str:
     return json.dumps({"continue": True}, ensure_ascii=False, indent=2)
 
