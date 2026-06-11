@@ -34,7 +34,7 @@ def pretty_string(node: str, prop_name: str, mask_keys: AbstractSet[str]) -> str
     limit = 128
     if prop_name not in mask_keys:
         return node
-      b = node.encode("utf-8", errors="replace")
+    b = node.encode("utf-8", errors="replace")
     if len(b) <= limit:
         return node
     prefix = b[:limit].decode("utf-8", errors="ignore")
