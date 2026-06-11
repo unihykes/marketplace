@@ -3,6 +3,8 @@ import os
 import sys
 from datetime import datetime
 
+#详细的json数据结构参考: https://github.com/openai/codex/tree/main/codex-rs/hooks/schema/generated
+
 LOG_FILE = os.path.join(os.getcwd(), ".codex\\logs\\hook.log")
 os.makedirs(os.path.dirname(LOG_FILE), exist_ok=True)
 

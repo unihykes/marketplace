@@ -100,12 +100,13 @@ def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookStopInputBody]:
     return head, inst
 
 
-# Output
-# {
-#   "followup_message": "<message text>"
-# }
+# Field	Effect
+# continue	If false, marks that hook run as stopped
+# stopReason	Recorded as the reason for stopping
+# systemMessage	Surfaced as a warning in the UI or event stream
+# suppressOutput	Parsed today but not yet implemented
 def build_hook_response() -> str:
-    return json.dumps({}, ensure_ascii=False, indent=2)
+    return json.dumps({"continue": True}, ensure_ascii=False, indent=2)
 
 
 if __name__ == "__main__":

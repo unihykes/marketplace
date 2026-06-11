@@ -129,9 +129,11 @@ def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookBeforeSubmitPrompt
     return head, inst
 
 
-# 输出字段	类型	描述
-# continue	boolean	是否允许提示词提交继续进行
-# user_message	string (optional)	当提示词被阻止时向用户显示的消息
+# Field	Effect
+# continue	If false, marks that hook run as stopped
+# stopReason	Recorded as the reason for stopping
+# systemMessage	Surfaced as a warning in the UI or event stream
+# suppressOutput	Parsed today but not yet implemented
 def build_hook_response() -> str:
     return json.dumps({"continue": True}, ensure_ascii=False, indent=2)
 

@@ -78,11 +78,13 @@ def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookSessionStartInputB
     return head, inst
 
 
-# 输出字段	类型	描述
-# env	object (optional)	为此会话设置的环境变量。对后续所有 hook 的执行均可用
-# additional_context	string (optional)	要添加到对话初始系统上下文中的额外上下文
+# Field	Effect
+# continue	If false, marks that hook run as stopped
+# stopReason	Recorded as the reason for stopping
+# systemMessage	Surfaced as a warning in the UI or event stream
+# suppressOutput	Parsed today but not yet implemented
 def build_hook_response() -> str:
-    return json.dumps({}, ensure_ascii=False, indent=2)
+    return json.dumps({"continue": True}, ensure_ascii=False, indent=2)
 
 
 if __name__ == "__main__":

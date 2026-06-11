@@ -191,10 +191,13 @@ def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookSubagentStopInputB
         break
     return head, inst
 
-# 输出字段	类型	描述
-# followup_message	string (optional)	使用此消息自动继续。仅当 status 为 "completed" 时才会被处理。
+# Field	Effect
+# continue	If false, marks that hook run as stopped
+# stopReason	Recorded as the reason for stopping
+# systemMessage	Surfaced as a warning in the UI or event stream
+# suppressOutput	Parsed today but not yet implemented
 def build_hook_response() -> str:
-    return json.dumps({}, ensure_ascii=False, indent=2)
+    return json.dumps({"continue": True}, ensure_ascii=False, indent=2)
 
 
 if __name__ == "__main__":

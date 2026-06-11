@@ -127,6 +127,10 @@ def get_hook_project_log_path(log_date: str) -> Path:
 # turn_id          string        Turn-scoped hooks list turn_id as a Codex-specific extension in their event-specific tables.
 # permission_mode  string        describes the current permission mode as default, acceptEdits, plan, dontAsk, or bypassPermissions
 
+# 备注
+# hook PreCompact  不存在 permission_mode 字段
+# hook PostCompact 不存在 permission_mode 字段
+
 class R2eHookInputHead:
     def __init__(self) -> None:
         """初始化 Hook 头部字段，先填充默认占位值。"""
