@@ -6,7 +6,7 @@ import json
 import sys
 from typing import Any, Dict, Optional
 
-import r2e_hook_common as c
+import r2u_hook_common as c
 
 _LOG_MASK_KEYS = frozenset({
     "prompt", "text", "content",
