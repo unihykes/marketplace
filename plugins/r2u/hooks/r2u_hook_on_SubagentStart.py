@@ -172,11 +172,13 @@ def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookSubagentStartInput
     return head, inst
 
 
-# 输出字段	类型	描述
-# permission	string	"allow" 表示继续，"deny" 表示阻止。subagentStart 不支持 "ask"，并将其视为 "deny"。
-# user_message	string (optional)	子代理被拒绝时向用户显示的消息
+# Field	Effect
+# continue	If false, marks that hook run as stopped
+# stopReason	Recorded as the reason for stopping
+# systemMessage	Surfaced as a warning in the UI or event stream
+# suppressOutput	Parsed today but not yet implemented
 def build_hook_response() -> str:
-    return json.dumps({"permission": "allow"}, ensure_ascii=False, indent=2)
+    return json.dumps({"continue": True}, ensure_ascii=False, indent=2)
 
 
 if __name__ == "__main__":
