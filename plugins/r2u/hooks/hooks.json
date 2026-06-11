@@ -5,8 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat SessionStart",
-            "statusMessage": "Loading session notes"
+            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat SessionStart"
           }
         ]
       }
@@ -16,8 +15,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat PreToolUse",
-            "statusMessage": "Checking Bash command"
+            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat PreToolUse"
           }
         ]
       }
@@ -27,8 +25,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat PermissionRequest",
-            "statusMessage": "Checking approval request"
+            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat PermissionRequest"
           }
         ]
       }
