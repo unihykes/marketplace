@@ -197,11 +197,17 @@ def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookPostToolUseInputBo
     return head, inst
 
 
-# 输出字段	类型	描述
-# updated_mcp_tool_output	object (optional)	仅适用于 MCP 工具：替换模型看到的工具输出
-# additional_context	string (optional)	工具结果后注入到对话中的额外上下文信息
+# Field	Effect
+# continue	If false, marks that hook run as stopped
+# stopReason	Recorded as the reason for stopping
+# systemMessage	Surfaced as a warning in the UI or event stream
+# suppressOutput	Parsed today but not yet implemented
+# 备注:
+# PostToolUse supports systemMessage, continue: false, and stopReason. 
+# suppressOutput is parsed but not currently supported for that event.
+
 def build_hook_response() -> str:
-    return json.dumps({}, ensure_ascii=False, indent=2)
+    return json.dumps({"continue": True}, ensure_ascii=False, indent=2)
 
 
 if __name__ == "__main__":
