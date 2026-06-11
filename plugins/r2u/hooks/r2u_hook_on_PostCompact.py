@@ -4,34 +4,27 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 import json
 import sys
-from typing import Any, Dict
+from typing import Any, Dict, Optional
 
 import r2u_hook_common as c
 
-_LOG_MASK_KEYS: frozenset[str] = frozenset()
 
-
-def _mask_tree_for_log(node: Any, prop_name: str = "") -> Any:
-    if node is None:
-        return None
-    if isinstance(node, str):
-        return c.pretty_string(node, prop_name, _LOG_MASK_KEYS)
-    if isinstance(node, bool) or isinstance(node, (int, float)):
-        return node
-    if isinstance(node, dict):
-        return {k: _mask_tree_for_log(v, k) for k, v in node.items()}
-    if isinstance(node, list):
-        return [_mask_tree_for_log(x, prop_name) for x in node]
-    return node
-
-
-# TODO: 待补充 PostCompact 的输入字段定义
+# Field	Type	Meaning
+# turn_id	string	Codex-specific extension. Active Codex turn id
+# trigger	string	What triggered compaction: manual or auto
+# 备注: turn_id 已在 R2eHookInputHead 中解析
 @dataclass
 class R2eHookPostCompactInputBody:
+    trigger: Optional[str] = None
     others: Dict[str, Any] = field(default_factory=dict)
 
     def to_string(self) -> str:
-        return "\n" + json.dumps(_mask_tree_for_log(self.others), ensure_ascii=False, indent=2)
+        payload: Dict[str, Any] = {
+            "trigger": self.trigger,
+        }
+        if self.others:
+            payload["others"] = self.others
+        return "\n" + json.dumps(payload, ensure_ascii=False, indent=2)
 
 
 def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookPostCompactInputBody]:
@@ -41,6 +34,7 @@ def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookPostCompactInputBo
     if not str(body_str).strip():
         return head, inst
     if not hv:
+        inst.trigger = c.fallback_quoted(body_str, "trigger")
         inst.others = c.invalid_others()
         return head, inst
     try:
@@ -51,7 +45,8 @@ def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookPostCompactInputBo
         inst.others = c.invalid_others()
         return head, inst
 
-    # TODO: 待补充具体字段解析
+    if "trigger" in obj:
+        inst.trigger = obj.pop("trigger")
     if obj:
         inst.others = dict(obj)
     return head, inst
