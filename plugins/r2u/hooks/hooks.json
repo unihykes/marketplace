@@ -5,7 +5,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${HOME}/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python ${PLUGIN_ROOT}/hooks/r2e_hook_on_default.py",
+            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat SessionStart",
             "statusMessage": "Loading session notes"
           }
         ]
@@ -16,7 +16,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${HOME}/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python ${PLUGIN_ROOT}/hooks/r2e_hook_on_default.py",
+            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat PreToolUse",
             "statusMessage": "Checking Bash command"
           }
         ]
@@ -27,7 +27,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${HOME}/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python ${PLUGIN_ROOT}/hooks/r2e_hook_on_default.py",
+            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat PermissionRequest",
             "statusMessage": "Checking approval request"
           }
         ]
@@ -38,7 +38,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${HOME}/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python ${PLUGIN_ROOT}/hooks/r2e_hook_on_default.py",
+            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat PostToolUse",
             "statusMessage": "Reviewing Bash output"
           }
         ]
@@ -49,7 +49,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${HOME}/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python ${PLUGIN_ROOT}/hooks/r2e_hook_on_default.py"
+            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat PreCompact"
           }
         ]
       }
@@ -59,7 +59,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${HOME}/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python ${PLUGIN_ROOT}/hooks/r2e_hook_on_default.py"
+            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat PostCompact"
           }
         ]
       }
@@ -69,7 +69,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${HOME}/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python ${PLUGIN_ROOT}/hooks/r2e_hook_on_default.py"
+            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat UserPromptSubmit"
           }
         ]
       }
@@ -79,7 +79,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${HOME}/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python ${PLUGIN_ROOT}/hooks/r2e_hook_on_default.py"
+            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat SubagentStart"
           }
         ]
       }
@@ -89,7 +89,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${HOME}/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python ${PLUGIN_ROOT}/hooks/r2e_hook_on_default.py"
+            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat SubagentStop"
           }
         ]
       }
@@ -99,7 +99,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${HOME}/.cache/codex-runtimes/codex-primary-runtime/dependencies/python/python ${PLUGIN_ROOT}/hooks/r2e_hook_on_default.py"
+            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat Stop"
           }
         ]
       }
