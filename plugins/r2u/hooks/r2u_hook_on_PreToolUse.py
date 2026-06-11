@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -156,13 +156,13 @@ def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookPreToolUseInputBod
         break
     return head, inst
 
-# 输出字段	类型	描述
-# permission	string	"allow" 表示继续，"deny" 表示阻止。"ask" 可被 schema 接受，但目前不会对 preToolUse 强制执行。
-# user_message	string (optional)	当操作被拒绝时显示给用户的消息
-# agent_message	string (optional)	当操作被拒绝时反馈给 agent 的消息
-# updated_input	object (optional)	改用的修改后工具输入
+
+# PreToolUse and PermissionRequest support systemMessage, 
+# but continue, stopReason, and suppressOutput aren’t currently supported for those events. 
+# If a PreToolUse hook returns one of those unsupported fields, Codex marks that hook run as failed, 
+# reports the error, and continues the tool call.
 def build_hook_response() -> str:
-    return json.dumps({"permission": "allow"}, ensure_ascii=False, indent=2)
+    return json.dumps({}, ensure_ascii=False, indent=2)
 
 
 if __name__ == "__main__":

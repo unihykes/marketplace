@@ -1,4 +1,4 @@
-@echo off
+﻿@echo off
 set "LOG_FILE=%cd%\.codex\logs\hooks.log"
 set "EXECUTOR=%USERPROFILE%\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe"
 set "EVENT_NAME=%~1"

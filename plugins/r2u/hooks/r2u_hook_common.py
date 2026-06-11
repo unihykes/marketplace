@@ -1,4 +1,4 @@
-# 公共封装
+﻿# 公共封装
 
 from __future__ import annotations
 

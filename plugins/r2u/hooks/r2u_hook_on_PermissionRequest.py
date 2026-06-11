@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -25,7 +25,7 @@ def _mask_tree_for_log(node: Any, prop_name: str = "") -> Any:
     return node
 
 
-# TODO: 待补充 PermissionRequest 的输入字段定义
+# TODO: 待补充 PermissionRequest 的输入字段定
 @dataclass
 class R2eHookPermissionRequestInputBody:
     others: Dict[str, Any] = field(default_factory=dict)
@@ -51,19 +51,18 @@ def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookPermissionRequestI
         inst.others = c.invalid_others()
         return head, inst
 
-    # TODO: 待补充具体字段解析
+    # TODO: ´ý²¹³ä¾ßÌå×Ö¶Î½âÎö
     if obj:
         inst.others = dict(obj)
     return head, inst
 
 
-# Field	Effect
-# continue	If false, marks that hook run as stopped
-# stopReason	Recorded as the reason for stopping
-# systemMessage	Surfaced as a warning in the UI or event stream
-# suppressOutput	Parsed today but not yet implemented
+# PreToolUse and PermissionRequest support systemMessage, 
+# but continue, stopReason, and suppressOutput aren’t currently supported for those events. 
+# If a PreToolUse hook returns one of those unsupported fields, Codex marks that hook run as failed, 
+# reports the error, and continues the tool call.
 def build_hook_response() -> str:
-    return json.dumps({"continue": True}, ensure_ascii=False, indent=2)
+    return json.dumps({}, ensure_ascii=False, indent=2)
 
 
 if __name__ == "__main__":

@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+﻿#!/usr/bin/env python3
 from __future__ import annotations
 
 from dataclasses import dataclass, field
@@ -177,6 +177,9 @@ def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookSubagentStartInput
 # stopReason	Recorded as the reason for stopping
 # systemMessage	Surfaced as a warning in the UI or event stream
 # suppressOutput	Parsed today but not yet implemented
+
+# 备注
+# SubagentStart accepts the same shape for systemMessage and hook-specific context, but continue: false doesn’t stop the subagent:
 def build_hook_response() -> str:
     return json.dumps({"continue": True}, ensure_ascii=False, indent=2)
 
