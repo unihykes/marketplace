@@ -94,16 +94,16 @@ def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookPreToolUseInputBod
 #    "permissionDecision": "deny",
 #    "permissionDecisionReason": "阻止原因"
 #  }
-}
+#}
 # 添加上下文但不阻止
 #{
 #  "hookSpecificOutput": {
 #    "hookEventName": "PreToolUse",
 #    "additionalContext": "模型可见的提示信息"
 #  }
-}
+#}
 # 重写工具调用（不阻止）
-{
+#{
 #  "hookSpecificOutput": {
 #    "hookEventName": "PreToolUse",
 #    "permissionDecision": "allow",
