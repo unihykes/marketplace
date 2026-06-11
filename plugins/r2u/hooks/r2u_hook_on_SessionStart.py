@@ -55,8 +55,16 @@ def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookSessionStartInputB
 # stopReason	Recorded as the reason for stopping
 # systemMessage	Surfaced as a warning in the UI or event stream
 # suppressOutput	Parsed today but not yet implemented
+# hookSpecificOutput.hookEventName	SessionStart
+# hookSpecificOutput.additionalContext	Extra developer context injected into the conversation
 def build_hook_response() -> str:
-    return json.dumps({"continue": True}, ensure_ascii=False, indent=2)
+    return json.dumps({
+        "continue": True,
+        "hookSpecificOutput": {
+            "hookEventName": "SessionStart",
+            "additionalContext": ""
+        }
+    }, ensure_ascii=False, indent=2)
 
 
 if __name__ == "__main__":
