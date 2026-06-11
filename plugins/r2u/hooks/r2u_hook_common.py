@@ -1,4 +1,4 @@
-# r2e Linux hooks 公共逻辑
+# 公共封装
 
 from __future__ import annotations
 
@@ -115,14 +115,13 @@ def fallback_workspace_leaf(text: str) -> Optional[str]:
 
 def get_hook_project_log_path(log_date: str) -> Path:
     """获取按日切分的日志文件路径，必要时自动创建日志目录。"""
-    project_dir = os.environ.get("CURSOR_PROJECT_DIR", "").strip()
+    project_dir = os.environ.get("CODEX_PROJECT_DIR", "").strip()
     if not project_dir:
-        #project_dir = str(RUNTIME_DIR.parent)
         project_dir = os.getcwd()
     log_dir = Path(project_dir) / ".codex" / "logs"
     log_dir.mkdir(parents=True, exist_ok=True)
     dd = log_date.strip() or datetime.now().strftime("%Y-%m-%d")
-    return log_dir / f"r2e_hook_event_{dd}.log"
+    return log_dir / f"r2u_hook_event_{dd}.log"
 
 # 字段	类型	描述	
 # conversation_id	string	跨多轮对话保持稳定的会话 ID	
