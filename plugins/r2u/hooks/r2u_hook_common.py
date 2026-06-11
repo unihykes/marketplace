@@ -130,6 +130,11 @@ def get_hook_project_log_path(log_date: str) -> Path:
 # cwd              string        Working directory for the session
 # hook_event_name  string        Current hook event name
 # model            string        Codex-specific extension. Active model slug
+
+# 其他字段
+# turn_id          string        Turn-scoped hooks list turn_id as a Codex-specific extension in their event-specific tables.
+# permission_mode  string        describes the current permission mode as default, acceptEdits, plan, dontAsk, or bypassPermissions
+
 class R2eHookInputHead:
     def __init__(self) -> None:
         """初始化 Hook 头部字段，先填充默认占位值。"""
@@ -139,6 +144,8 @@ class R2eHookInputHead:
         self.hook_event_name: str = "-"
         self.cwd: str = "-"
         self.transcript_path: Optional[str] = None
+        self.turn_id: str = "-"
+        self.permission_mode: str = "-"
         self.is_valid_Json: bool = True
 
     def date_string(self) -> str:
@@ -162,6 +169,7 @@ class R2eHookInputHead:
             f"[{pretty_uuid(self.session_id)}]"
             f"[{self.model}]"
             f"[{self.hook_event_name}]"
+            f"[{self.transcript_path}]"
         )
 
 
@@ -200,6 +208,10 @@ def get_hook_input_head_and_body(raw_input: Optional[str] = None) -> Tuple[R2eHo
                 head.transcript_path = None
             elif isinstance(v, str):
                 head.transcript_path = v if v else None
+        if isinstance(obj.get("turn_id"), str):
+            head.turn_id = obj.pop("turn_id")
+        if isinstance(obj.get("permission_mode"), str):
+            head.permission_mode = obj.pop("permission_mode")
 
         body_str = json.dumps(obj, ensure_ascii=False, indent=2)
     except Exception:
@@ -221,6 +233,12 @@ def get_hook_input_head_and_body(raw_input: Optional[str] = None) -> Tuple[R2eHo
         c = fallback_quoted(raw_input, "transcript_path")
         if c is not None:
             head.transcript_path = c if c else None
+        c = fallback_quoted(raw_input, "turn_id")
+        if c is not None:
+            head.turn_id = c
+        c = fallback_quoted(raw_input, "permission_mode")
+        if c is not None:
+            head.permission_mode = c
 
     return head, body_str
 
