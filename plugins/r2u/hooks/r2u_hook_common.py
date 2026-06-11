@@ -102,14 +102,6 @@ def fallback_duration(text: str) -> Optional[float]:
         return None
 
 
-def fallback_cwd_leaf(text: str) -> Optional[str]:
-    """回退提取 cwd 路径并返回目录名。"""
-    cap = re_capture(text, r'"cwd"\s*:\s*"([^"]*)"')
-    if not cap:
-        return None
-    normalized = cap.rstrip("/")
-    leaf = os.path.basename(normalized)
-    return leaf or None
 
 
 def get_hook_project_log_path(log_date: str) -> Path:
@@ -171,7 +163,6 @@ class R2eHookInputHead:
             f"[{self.model}]"
             f"[{self.permission_mode}]"
             f"[{self.hook_event_name}]"
-            f"[{self.transcript_path}]"
         )
 
 
