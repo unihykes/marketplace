@@ -34,11 +34,11 @@ def pretty_string(node: str, prop_name: str, mask_keys: AbstractSet[str]) -> str
     limit = 128
     if prop_name not in mask_keys:
         return node
-    b = node.encode("utf-8")
+      b = node.encode("utf-8", errors="replace")
     if len(b) <= limit:
         return node
     prefix = b[:limit].decode("utf-8", errors="ignore")
-    return f"{prefix}...+{len(b) - len(prefix.encode('utf-8'))}"
+    return f"{prefix}...+{len(b) - len(prefix.encode('utf-8', errors='replace'))}"
 
 
 def repair_missing_closing_quote_after_text(raw: str) -> Optional[str]:
@@ -243,3 +243,4 @@ def get_hook_input_head_and_body(raw_input: Optional[str] = None) -> Tuple[R2eHo
 def invalid_others() -> Dict[str, str]:
     """构造统一的无效 JSON 错误对象。"""
     return {"_errorMessage": "invalid json"}
+

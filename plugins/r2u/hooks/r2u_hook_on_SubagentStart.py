@@ -83,9 +83,10 @@ def build_hook_response() -> str:
 
 if __name__ == "__main__":
     head, body = get_hook_input_body()
-    with open(c.get_hook_project_log_path(head.date_string()), "a", encoding="utf-8") as log_file:
+    with open(c.get_hook_project_log_path(head.date_string()), "a", encoding="utf-8", errors="replace") as log_file:
         log_file.write(
             f"{head.to_log_prefix()}"
             f"{body.to_string()}\n"
         )
     sys.stdout.write(build_hook_response())
+
