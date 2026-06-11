@@ -8,7 +8,7 @@ from typing import Any, Dict, Optional
 
 import r2u_hook_common as c
 
-_LOG_MASK_KEYS = frozenset({"task"})
+_LOG_MASK_KEYS = frozenset({"last_assistant_message"})
 
 
 def _mask_tree_for_log(node: Any, prop_name: str = "") -> Any:
@@ -25,58 +25,31 @@ def _mask_tree_for_log(node: Any, prop_name: str = "") -> Any:
     return node
 
 
-# 输入字段	类型	描述	
-# session_id	string(opt)	此会话唯一标识，常与 conversation_id 相同
-# subagent_type	string	subagent 的类型：generalPurpose、explore、shell 等。	
-# status	string	"completed"、"error" 或 "aborted"	
-# task	string	提供给 subagent 的任务描述	
-# description	string	对 subagent 目的的简要描述	
-# summary	string	subagent 的输出摘要	
-# duration_ms	number	执行时间 (毫秒)	
-# message_count	number	subagent 会话期间交换的消息数量	
-# tool_call_count	number	subagent 发起的工具调用次数	
-# loop_count	number	此 subagent 已触发 subagentStop 后续操作的次数 (从 0 开始)	
-# modified_files	string[]	subagent 修改过的文件	
-# agent_transcript_path	string	null	subagent 自身会话记录文件的路径 (与父对话分开)
+# Field	Type	Meaning
+# turn_id	string	Codex-specific extension. Active Codex turn id
+# agent_id	string	Identifier for the subagent
+# agent_type	string	Subagent type or profile
+# agent_transcript_path	string | null	Path to the subagent transcript file, if any
+# stop_hook_active	boolean	Whether this subagent was already continued
+# last_assistant_message	string | null	Latest subagent assistant message, if available
+# 备注: turn_id 已在 R2eHookInputHead 中解析
 @dataclass
 class R2eHookSubagentStopInputBody:
-    status: Optional[Any] = None
-    loop_count: int = 0
-    duration_ms: int = 0
-    subagent_type: Optional[Any] = None
+    agent_id: Optional[str] = None
+    agent_type: Optional[str] = None
+    agent_transcript_path: Optional[str] = None
+    stop_hook_active: bool = False
+    last_assistant_message: Optional[str] = None
     others: Dict[str, Any] = field(default_factory=dict)
-    agent_transcript_path: Optional[Any] = None
-    description: Optional[Any] = None
-    message_count: Optional[Any] = None
-    modified_files: Optional[Any] = None
-    summary: Optional[Any] = None
-    task: Optional[Any] = None
-    tool_call_count: Optional[Any] = None
 
     def to_string(self) -> str:
-        payload: Dict[str, Any] = {}
-        if self.status is not None:
-            payload["status"] = self.status
-        if self.loop_count is not None:
-            payload["loop_count"] = self.loop_count
-        if self.duration_ms is not None:
-            payload["duration_ms"] = self.duration_ms
-        if self.subagent_type is not None:
-            payload["subagent_type"] = self.subagent_type
-        if self.agent_transcript_path is not None:
-            payload["agent_transcript_path"] = self.agent_transcript_path
-        if self.description is not None:
-            payload["description"] = self.description
-        if self.message_count is not None:
-            payload["message_count"] = self.message_count
-        if self.modified_files is not None:
-            payload["modified_files"] = self.modified_files
-        if self.summary is not None:
-            payload["summary"] = self.summary
-        if self.task is not None:
-            payload["task"] = self.task
-        if self.tool_call_count is not None:
-            payload["tool_call_count"] = self.tool_call_count
+        payload: Dict[str, Any] = {
+            "agent_id": self.agent_id,
+            "agent_type": self.agent_type,
+            "agent_transcript_path": self.agent_transcript_path,
+            "stop_hook_active": self.stop_hook_active,
+            "last_assistant_message": self.last_assistant_message,
+        }
         if self.others:
             payload["others"] = self.others
         return "\n" + json.dumps(_mask_tree_for_log(payload), ensure_ascii=False, indent=2)
@@ -85,117 +58,53 @@ class R2eHookSubagentStopInputBody:
 def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookSubagentStopInputBody]:
     head, body_str = c.get_hook_input_head_and_body()
     inst = R2eHookSubagentStopInputBody()
-    while True:
-        hv = head.is_valid_Json
-        empty = {
-            "subagent_type": None,
-            "status": None,
-            "task": None,
-            "description": None,
-            "summary": None,
-            "duration_ms": 0,
-            "message_count": 0,
-            "tool_call_count": 0,
-            "loop_count": 0,
-            "modified_files": [],
-            "agent_transcript_path": None,
-        }
-        if not str(body_str).strip():
-            out = empty
-            if isinstance(out, dict):
-                for k, v in out.items():
-                    if hasattr(inst, k):
-                        setattr(inst, k, v)
-                    else:
-                        inst.others[k] = v
-            else:
-                inst.others = {"_value": out}
-            break
-        if not hv:
-            out = {
-            "subagent_type": c.fallback_quoted(body_str, "subagent_type"),
-            "status": c.fallback_quoted(body_str, "status"),
-            "task": c.fallback_quoted(body_str, "task"),
-            "description": c.fallback_quoted(body_str, "description"),
-            "summary": c.fallback_quoted(body_str, "summary"),
-            "duration_ms": c.fallback_long(body_str, "duration_ms") or 0,
-            "message_count": c.fallback_long(body_str, "message_count") or 0,
-            "tool_call_count": c.fallback_long(body_str, "tool_call_count") or 0,
-            "loop_count": c.fallback_long(body_str, "loop_count") or 0,
-            "modified_files": [],
-            "agent_transcript_path": c.fallback_quoted(body_str, "agent_transcript_path"),
-            "others": c.invalid_others(),
-        }
-            if isinstance(out, dict):
-                for k, v in out.items():
-                    if hasattr(inst, k):
-                        setattr(inst, k, v)
-                    else:
-                        inst.others[k] = v
-            else:
-                inst.others = {"_value": out}
-            break
-        try:
-            obj = json.loads(body_str)
-            if not isinstance(obj, dict):
-                raise ValueError("not object")
-        except Exception:
-            err = dict(empty)
-            err["others"] = c.invalid_others()
-            out = err
-            if isinstance(out, dict):
-                for k, v in out.items():
-                    if hasattr(inst, k):
-                        setattr(inst, k, v)
-                    else:
-                        inst.others[k] = v
-            else:
-                inst.others = {"_value": out}
-            break
-        others: Dict[str, Any] = {}
-        out = dict(empty)
-        if "session_id" in obj:
-            obj.pop("session_id")
-        for k in ("subagent_type", "status", "description", "summary", "agent_transcript_path"):
-            if k in obj:
-                v = obj.pop(k)
-                out[k] = str(v) if v is not None else None
-        if "task" in obj:
-            v = obj.pop("task")
-            out["task"] = str(v) if v is not None else None
-        for k in ("duration_ms", "message_count", "tool_call_count", "loop_count"):
-            if k in obj:
-                try:
-                    out[k] = int(obj.pop(k))
-                except (TypeError, ValueError):
-                    obj.pop(k, None)
-        if "modified_files" in obj:
-            mf = obj.pop("modified_files")
-            if isinstance(mf, list):
-                out["modified_files"] = [str(x) for x in mf]
-            elif isinstance(mf, str):
-                out["modified_files"] = [mf]
-        for k, v in obj.items():
-            others[k] = v
-        if others:
-            out["others"] = others
-        out = out
-        if isinstance(out, dict):
-            for k, v in out.items():
-                if hasattr(inst, k):
-                    setattr(inst, k, v)
-                else:
-                    inst.others[k] = v
-        else:
-            inst.others = {"_value": out}
-        break
+    hv = head.is_valid_Json
+    if not str(body_str).strip():
+        return head, inst
+    if not hv:
+        inst.agent_id = c.fallback_quoted(body_str, "agent_id")
+        inst.agent_type = c.fallback_quoted(body_str, "agent_type")
+        inst.agent_transcript_path = c.fallback_quoted(body_str, "agent_transcript_path")
+        inst.stop_hook_active = c.fallback_bool(body_str, "stop_hook_active") or False
+        inst.last_assistant_message = c.fallback_quoted(body_str, "last_assistant_message")
+        inst.others = c.invalid_others()
+        return head, inst
+    try:
+        obj = json.loads(body_str)
+        if not isinstance(obj, dict):
+            raise ValueError("body not object")
+    except Exception:
+        inst.others = c.invalid_others()
+        return head, inst
+
+    if "agent_id" in obj:
+        inst.agent_id = obj.pop("agent_id")
+    if "agent_type" in obj:
+        inst.agent_type = obj.pop("agent_type")
+    if "agent_transcript_path" in obj:
+        v = obj.pop("agent_transcript_path")
+        inst.agent_transcript_path = str(v) if v is not None else None
+    if "stop_hook_active" in obj:
+        inst.stop_hook_active = bool(obj.pop("stop_hook_active"))
+    if "last_assistant_message" in obj:
+        v = obj.pop("last_assistant_message")
+        inst.last_assistant_message = str(v) if v is not None else None
+    if obj:
+        inst.others = dict(obj)
     return head, inst
+
 
 # Field	Effect
 # continue	If false, marks that hook run as stopped
 # stopReason	Recorded as the reason for stopping
 # systemMessage	Surfaced as a warning in the UI or event stream
 # suppressOutput	Parsed today but not yet implemented
+
+# 阻止 subagent 停止（即继续运行）
+#{
+#  "decision": "block",
+#  "reason": "Run one more focused pass inside the subagent."
+#}
 def build_hook_response() -> str:
     return json.dumps({"continue": True}, ensure_ascii=False, indent=2)
 
