@@ -58,11 +58,12 @@ def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookSessionStartInputB
 # hookSpecificOutput.hookEventName	SessionStart
 # hookSpecificOutput.additionalContext	Extra developer context injected into the conversation
 def build_hook_response() -> str:
+    additional_context = c.load_plugin_context_text("AGENTS.r2u.md")
     return json.dumps({
         "continue": True,
         "hookSpecificOutput": {
             "hookEventName": "SessionStart",
-            "additionalContext": ""
+            "additionalContext": additional_context
         }
     }, ensure_ascii=False, indent=2)
 

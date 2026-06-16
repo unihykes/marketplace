@@ -115,6 +115,21 @@ def get_hook_project_log_path(log_date: str) -> Path:
     return log_dir / f"r2u_hook_event_{dd}.log"
 
 
+def load_plugin_context_text(context_filename: str, default_text: str = "") -> str:
+    """从插件根目录下的 contexts 文件中读取纯文本内容。
+
+    读取位置由 ``PLUGIN_ROOT`` 决定；缺失、空值或读取失败时返回 ``default_text``。
+    """
+    plugin_root = os.environ.get("PLUGIN_ROOT", "").strip()
+    if not plugin_root:
+        return default_text
+    context_path = Path(plugin_root) / "contexts" / context_filename
+    try:
+        return context_path.read_text(encoding="utf-8")
+    except Exception:
+        return default_text
+
+
 # Codex Hook 通用 head 字段:
 # Field            Type          Meaning
 # session_id       string        Current Codex session id. Subagent hooks use the parent session id.
