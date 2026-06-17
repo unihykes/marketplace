@@ -1,1 +1,2 @@
-R2U_PLUGIN_ROOT = "D:\\unihykes\\marketplace\\plugins\\r2u"
+# 当 prompt 或 skill 中出现 <R2U_PLUGIN_ROOT> 时，将其解释为定义等号后面的真实值(通常是r2u插件的根路径)
+R2U_PLUGIN_ROOT = ""

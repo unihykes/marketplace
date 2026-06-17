@@ -63,6 +63,32 @@ def _toml_quote(value: str) -> str:
     return json.dumps(value, ensure_ascii=False)
 
 
+def _strip_toml_inline_comment(value: str) -> str:
+    quote_char: Optional[str] = None
+    escaped = False
+    for index, char in enumerate(value):
+        if escaped:
+            escaped = False
+            continue
+        if quote_char == '"' and char == "\\":
+            escaped = True
+            continue
+        if char in ("'", '"'):
+            if quote_char == char:
+                quote_char = None
+            elif quote_char is None:
+                quote_char = char
+            continue
+        if char == "#" and quote_char is None:
+            return value[:index]
+    return value
+
+
+def _is_toml_empty_value(value: str) -> bool:
+    normalized = _strip_toml_inline_comment(value).strip()
+    return normalized in ("", '""', "''")
+
+
 def _ensure_context_contract_text() -> str:
     plugin_root = os.environ.get("PLUGIN_ROOT", "").strip()
     if not plugin_root:
@@ -96,7 +122,7 @@ def _ensure_context_contract_text() -> str:
             next_lines.append(line)
             continue
         seen_keys.add(key)
-        if value.strip() and not value.strip().startswith("#"):
+        if not _is_toml_empty_value(value):
             next_lines.append(line)
             continue
         next_lines.append(f"{key} = {_toml_quote(defaults[key])}")
