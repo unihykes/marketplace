@@ -14,6 +14,7 @@ if "%~1"=="" (
 )
 
 set "SOURCE_DIR=%~dp0."
+set "R2U_DIR=%SOURCE_DIR%\..\r2u"
 set "TARGET_DIR=%PROJECT_ROOT%\.cursor\plugins\local\r2e"
 
 echo Source: %SOURCE_DIR% ^| Target: %TARGET_DIR%
@@ -32,37 +33,41 @@ if exist "%TARGET_DIR%\" (
 
 mkdir "%TARGET_DIR%" >nul 2>&1
 
-call :copy_dir ".cursor-plugin"
+call :copy_dir_optional ".cursor-plugin"
 if errorlevel 1 exit /b 1
 
-call :copy_dir "rules"
+call :copy_dir_optional "rules"
 if errorlevel 1 exit /b 1
 
-call :copy_dir "skills"
+call :copy_dir_optional "skills"
 if errorlevel 1 exit /b 1
 
-call :copy_dir "agents"
+call :copy_dir_optional "%R2U_DIR%\skills" "skills"
 if errorlevel 1 exit /b 1
 
-call :copy_dir "commands"
+call :copy_dir_optional "agents"
 if errorlevel 1 exit /b 1
 
-robocopy "%SOURCE_DIR%\hooks\windows" "%TARGET_DIR%\hooks" /e >nul
-set "ROBOCOPY_EXIT=%errorlevel%"
-if %ROBOCOPY_EXIT% GEQ 8 (
-  call :fail "Failed to copy hooks from hooks\windows. (robocopy exit code: %ROBOCOPY_EXIT%)"
-)
+call :copy_dir_optional "commands"
+if errorlevel 1 exit /b 1
+
+call :copy_dir_optional "hooks\windows" "hooks"
+if errorlevel 1 exit /b 1
 
 echo Plugin installed successfully. Please restart Cursor
 timeout /t 10 /nobreak >nul
 exit /b 0
 
-:copy_dir
-set "COPY_NAME=%~1"
-robocopy "%SOURCE_DIR%\%COPY_NAME%" "%TARGET_DIR%\%COPY_NAME%" /e >nul
+:copy_dir_optional
+set "COPY_TARGET_NAME=%~2"
+if "%COPY_TARGET_NAME%"=="" set "COPY_TARGET_NAME=%~1"
+set "COPY_SOURCE=%~1"
+if not exist "%COPY_SOURCE%\" set "COPY_SOURCE=%SOURCE_DIR%\%~1"
+if not exist "%COPY_SOURCE%\" exit /b 0
+robocopy "%COPY_SOURCE%" "%TARGET_DIR%\%COPY_TARGET_NAME%" /e >nul
 set "ROBOCOPY_EXIT=%errorlevel%"
 if %ROBOCOPY_EXIT% GEQ 8 (
-  call :fail "Failed to copy %COPY_NAME%. (robocopy exit code: %ROBOCOPY_EXIT%)"
+  call :fail "Failed to copy %COPY_SOURCE% to %COPY_TARGET_NAME%. (robocopy exit code: %ROBOCOPY_EXIT%)"
 )
 exit /b 0
 

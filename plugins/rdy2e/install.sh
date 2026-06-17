@@ -21,6 +21,7 @@ else
 fi
 
 SOURCE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+R2U_DIR="$(cd "${SOURCE_DIR}/../r2u" 2>/dev/null && pwd || true)"
 TARGET_DIR="${PROJECT_ROOT}/.cursor/plugins/local/r2e"
 echo "Source: ${SOURCE_DIR} | Target: ${TARGET_DIR}"
 
@@ -31,24 +32,26 @@ fi
 
 mkdir -p "${TARGET_DIR}"
 
-copy_dir() {
-  local src="${SOURCE_DIR}/$1"
-  if [[ ! -e "${src}" ]]; then
+copy_dir_optional() {
+  local src="$1"
+  local target_name="${2:-$1}"
+  if [[ ! -d "${src}" ]]; then
+    src="${SOURCE_DIR}/$1"
+  fi
+  if [[ ! -d "${src}" ]]; then
     return 0
   fi
-  if [[ -n "${2:-}" ]]; then
-    cp -a "${src}/." "${TARGET_DIR}/${2}/"
-  else
-    cp -a "${src}" "${TARGET_DIR}/"
-  fi
+  mkdir -p "${TARGET_DIR}/${target_name}"
+  cp -a "${src}/." "${TARGET_DIR}/${target_name}/"
 }
 
-copy_dir ".cursor-plugin"
-copy_dir "rules"
-copy_dir "skills"
-copy_dir "agents"
-copy_dir "commands"
-copy_dir "hooks/linux" "hooks"
+copy_dir_optional ".cursor-plugin"
+copy_dir_optional "rules"
+copy_dir_optional "skills"
+copy_dir_optional "${R2U_DIR}/skills" "skills"
+copy_dir_optional "agents"
+copy_dir_optional "commands"
+copy_dir_optional "hooks/linux" "hooks"
 
 echo "Plugin installed successfully. Please restart Cursor"
 exit 0
