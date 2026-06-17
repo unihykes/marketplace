@@ -11,7 +11,7 @@ import r2u_hook_common as c
 _LOG_MASK_KEYS = frozenset({
     "prompt", "text", "content",
     "output", "pattern", "task",
-    "old_string", "new_string", "context",
+    "old_string", "new_string", "context", "tool_response"
 })
 
 

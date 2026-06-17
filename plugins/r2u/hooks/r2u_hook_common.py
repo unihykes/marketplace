@@ -31,7 +31,7 @@ def pretty_string(node: str, prop_name: str, mask_keys: AbstractSet[str]) -> str
       不完整续字节，避免中文/Emoji 乱码），输出 ``<前缀>...+<剩余字节数>``；其中
       ``剩余 = 总字节数 - 实际前缀字节数``，保证 ``前缀字节数 + 剩余 == 总字节数``。
     """
-    limit = 128
+    limit = 256
     if prop_name not in mask_keys:
         return node
     b = node.encode("utf-8", errors="replace")
