@@ -1,5 +1,5 @@
 ---
-description: C++ 成员函数定义排版规则
+description: C++ 成员函数定义排版风格
 alwaysApply: true
 globs:
   - "**/*.h"
