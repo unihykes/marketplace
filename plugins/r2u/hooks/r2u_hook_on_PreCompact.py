@@ -70,5 +70,5 @@ if __name__ == "__main__":
             f"{body.to_string()}\n"
             f"{response}\n"
         )
-    sys.stdout.write(response)
+    c.write_stdout_utf8(response)
 

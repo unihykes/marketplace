@@ -259,3 +259,13 @@ def invalid_others() -> Dict[str, str]:
     """构造统一的无效 JSON 错误对象。"""
     return {"_errorMessage": "invalid json"}
 
+
+def write_stdout_utf8(text: str) -> None:
+    """将 Hook 响应显式按 UTF-8 写到 stdout。"""
+    stdout_buffer = getattr(sys.stdout, "buffer", None)
+    if stdout_buffer is None:
+        sys.stdout.write(text)
+        return
+    stdout_buffer.write(text.encode("utf-8"))
+    stdout_buffer.flush()
+
