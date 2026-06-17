@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 import json
+import os
+from pathlib import Path
 import sys
 from typing import Any, Dict, Optional
 
@@ -57,8 +59,66 @@ def get_hook_input_body() -> tuple[c.R2eHookInputHead, R2eHookSessionStartInputB
 # suppressOutput	Parsed today but not yet implemented
 # hookSpecificOutput.hookEventName	SessionStart
 # hookSpecificOutput.additionalContext	Extra developer context injected into the conversation
+def _toml_quote(value: str) -> str:
+    return json.dumps(value, ensure_ascii=False)
+
+
+def _ensure_context_contract_text() -> str:
+    plugin_root = os.environ.get("PLUGIN_ROOT", "").strip()
+    if not plugin_root:
+        return ""
+
+    context_path = Path(plugin_root) / "contexts" / "r2u_context_contract.toml"
+    defaults = {
+        "R2U_PLUGIN_ROOT": plugin_root,
+    }
+    context_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if not context_path.exists():
+        context_path.write_text(
+            "".join(f"{key} = {_toml_quote(value)}\n" for key, value in defaults.items()),
+            encoding="utf-8",
+        )
+        return context_path.read_text(encoding="utf-8")
+
+    lines = context_path.read_text(encoding="utf-8").splitlines()
+    seen_keys = set()
+    changed = False
+    next_lines = []
+    for line in lines:
+        stripped = line.strip()
+        if "=" not in stripped or stripped.startswith("#"):
+            next_lines.append(line)
+            continue
+        key, value = stripped.split("=", 1)
+        key = key.strip()
+        if key not in defaults:
+            next_lines.append(line)
+            continue
+        seen_keys.add(key)
+        if value.strip() and not value.strip().startswith("#"):
+            next_lines.append(line)
+            continue
+        next_lines.append(f"{key} = {_toml_quote(defaults[key])}")
+        changed = True
+
+    for key, value in defaults.items():
+        if key not in seen_keys:
+            next_lines.append(f"{key} = {_toml_quote(value)}")
+            changed = True
+
+    if changed:
+        context_path.write_text("\n".join(next_lines) + "\n", encoding="utf-8")
+
+    return context_path.read_text(encoding="utf-8")
+
+
 def build_hook_response() -> str:
-    additional_context = c.load_plugin_context_text("AGENTS.r2u.md")
+    context_parts = [
+        _ensure_context_contract_text(),
+        c.load_plugin_context_text("AGENTS.r2u.md"),
+    ]
+    additional_context = "\n\n".join(part for part in context_parts if part.strip())
     return json.dumps({
         "continue": True,
         "hookSpecificOutput": {
