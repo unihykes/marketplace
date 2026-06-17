@@ -1,0 +1,8 @@
+interface:
+  display_name: "r2u-code-check-dangling-lambda-capture"
+  short_description: "检查 lambda 按引用捕获局部等导致的悬垂风险；供 code-check 类 agent 主动调用"
+  default_prompt: "Use $r2u-code-check-dangling-lambda-capture to 检查 lambda 按引用捕获局部等导致的悬垂风险；供 code-check 类 agent 主动调用"
+
+policy:
+  allow_implicit_invocation: false
+

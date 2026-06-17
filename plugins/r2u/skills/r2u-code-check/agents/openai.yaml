@@ -1,0 +1,8 @@
+interface:
+  display_name: "r2u-code-check"
+  short_description: "C++ 代码检查，在用户要求 code check 或代码审查时使用"
+  default_prompt: "Use $r2u-code-check to C++ 代码检查，在用户要求 code check 或代码审查时使用"
+
+policy:
+  allow_implicit_invocation: false
+

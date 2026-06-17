@@ -1,0 +1,8 @@
+interface:
+  display_name: "r2u-code-check-shared-from-this"
+  short_description: "检查裸 this 构造 shared_ptr、误用 shared_from_this 等风险；供 code-check 类 agent 主动调用"
+  default_prompt: "Use $r2u-code-check-shared-from-this to 检查裸 this 构造 shared_ptr、误用 shared_from_this 等风险；供 code-check 类 agent 主动调用"
+
+policy:
+  allow_implicit_invocation: false
+

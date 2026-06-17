@@ -1,0 +1,8 @@
+interface:
+  display_name: "r2u-code-check-divide-by-zero"
+  short_description: "C++ 整数 `/` 与 `%`，分母可静态推定为 0 的除零检查；供 code-check 类 agent 主动调用"
+  default_prompt: "Use $r2u-code-check-divide-by-zero to C++ 整数 `/` 与 `%`，分母可静态推定为 0 的除零检查；供 code-check 类 agent 主动调用"
+
+policy:
+  allow_implicit_invocation: false
+

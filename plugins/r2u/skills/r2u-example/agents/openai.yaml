@@ -1,0 +1,8 @@
+interface:
+  display_name: "example"
+  short_description: "当用户输入 @r2u example 时触发, 用于示范技能的用法"
+  default_prompt: "Use $example to 当用户输入 @r2u example 时触发, 用于示范技能的用法"
+
+policy:
+  allow_implicit_invocation: false
+

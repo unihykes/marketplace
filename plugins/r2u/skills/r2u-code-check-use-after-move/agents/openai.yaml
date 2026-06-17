@@ -1,0 +1,8 @@
+interface:
+  display_name: "r2u-code-check-use-after-move"
+  short_description: "检查对象被移动后继续使用风险，供code-check类型的agent主动调用"
+  default_prompt: "Use $r2u-code-check-use-after-move to 检查对象被移动后继续使用风险，供code-check类型的agent主动调用"
+
+policy:
+  allow_implicit_invocation: false
+

@@ -1,0 +1,8 @@
+interface:
+  display_name: "r2u-code-check-dangling-reference"
+  short_description: "检查引用绑定临时对象、返回局部引用/指针等悬垂风险；供 code-check 类 agent 主动调用"
+  default_prompt: "Use $r2u-code-check-dangling-reference to 检查引用绑定临时对象、返回局部引用/指针等悬垂风险；供 code-check 类 agent 主动调用"
+
+policy:
+  allow_implicit_invocation: false
+

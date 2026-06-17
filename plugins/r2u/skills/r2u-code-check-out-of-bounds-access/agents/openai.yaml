@@ -1,0 +1,8 @@
+interface:
+  display_name: "r2u-code-check-out-of-bounds-access"
+  short_description: "C++ 数组/容器/缓冲区访问，下标或偏移可静态证明越界（>= size 或 < 0）；供 code-check 类 agent 主动调用"
+  default_prompt: "Use $r2u-code-check-out-of-bounds-access to C++ 数组/容器/缓冲区访问，下标或偏移可静态证明越界（>= size 或 < 0）；供 code-check 类 agent 主动调用"
+
+policy:
+  allow_implicit_invocation: false
+

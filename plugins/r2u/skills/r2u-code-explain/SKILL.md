@@ -1,5 +1,5 @@
 ---
-name: code-explain
+name: r2u-code-explain
 description: 当用户希望 Codex 解释代码、文件、函数、diff 或某次改动，并希望获得清晰的讲解时使用。
 ---
 

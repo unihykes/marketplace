@@ -1,0 +1,8 @@
+interface:
+  display_name: "r2u-code-check-dangling-std-span"
+  short_description: "检查 std::span 绑定临时或即将失效缓冲的悬垂风险；供 code-check 类 agent 主动调用"
+  default_prompt: "Use $r2u-code-check-dangling-std-span to 检查 std::span 绑定临时或即将失效缓冲的悬垂风险；供 code-check 类 agent 主动调用"
+
+policy:
+  allow_implicit_invocation: false
+

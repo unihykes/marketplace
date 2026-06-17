@@ -1,5 +1,5 @@
 interface:
-  display_name: "code-explain"
+  display_name: "r2u-code-explain"
   short_description: "解释代码、函数、diff 和改动。"
   default_prompt: "Use $code-explain to 解释这段代码，先说结论，再说明它做什么、怎么工作、为什么这样写，以及潜在问题。"
 

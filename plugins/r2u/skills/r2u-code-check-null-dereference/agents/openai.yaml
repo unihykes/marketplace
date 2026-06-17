@@ -1,0 +1,8 @@
+interface:
+  display_name: "r2u-code-check-null-dereference"
+  short_description: "检查可空指针/对象在可静态推知为空的路径上的解引用风险；供 code-check 类 agent 主动调用"
+  default_prompt: "Use $r2u-code-check-null-dereference to 检查可空指针/对象在可静态推知为空的路径上的解引用风险；供 code-check 类 agent 主动调用"
+
+policy:
+  allow_implicit_invocation: false
+

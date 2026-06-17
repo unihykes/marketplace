@@ -1,0 +1,8 @@
+interface:
+  display_name: "r2u-code-optimize-unnecessary-temporary"
+  short_description: "检查不必要的临时对象与中间态构造并给出低风险优化建议；供 code-optimize 类 agent 主动调用"
+  default_prompt: "Use $r2u-code-optimize-unnecessary-temporary to 检查不必要的临时对象与中间态构造并给出低风险优化建议；供 code-optimize 类 agent 主动调用"
+
+policy:
+  allow_implicit_invocation: false
+

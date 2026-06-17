@@ -1,0 +1,8 @@
+interface:
+  display_name: "r2u-code-optimize-unnecessary-copy"
+  short_description: "检查不必要的对象拷贝并给出低风险替换建议，供code-optimize类型的agent主动调用"
+  default_prompt: "Use $r2u-code-optimize-unnecessary-copy to 检查不必要的对象拷贝并给出低风险替换建议，供code-optimize类型的agent主动调用"
+
+policy:
+  allow_implicit_invocation: false
+
