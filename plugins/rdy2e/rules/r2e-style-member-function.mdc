@@ -1,0 +1,45 @@
+---
+description: C++ 成员函数定义排版规则
+alwaysApply: true
+globs:
+  - "**/*.h"
+  - "**/*.hpp"
+  - "**/*.cpp"
+---
+
+## 指令(做什么)
+
+当用户修改或生成 C++ 类成员函数、构造函数、析构函数定义时，应用以下规则
+
+## 约束(怎么做)
+### 类外成员函数定义
+
+- 返回值类型单独一行
+- 下一行写 `class_name::func_name(...)`
+- 左右花括号 `{`、`}` 各自独占一行
+
+### 类内成员函数定义
+
+- `return_type func_name(...)` 保持在同一行
+- 左右花括号 `{`、`}` 各自独占一行
+
+## 示例
+
+```cpp
+// 类外定义
+std::string
+user_service::get_name()
+{
+    return _name;
+}
+
+// 类内定义
+class user_service
+{
+public:
+    std::string get_name()
+    {
+        return _name;
+    }
+};
+```

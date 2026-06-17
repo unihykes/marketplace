@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\hooks\\r2e-hook-on-sessionStart.ps1",
+        "timeout": 86400,
+        "failClosed": false
+      }
+    ],
+    "sessionEnd": [
+      {
+        "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\hooks\\r2e-hook-on-sessionEnd.ps1",
+        "timeout": 86400
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\hooks\\r2e-hook-on-preToolUse.ps1",
+        "timeout": 86400
+      }
+    ],
+    "postToolUse": [
+      {
+        "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\hooks\\r2e-hook-on-postToolUse.ps1",
+        "timeout": 86400
+      }
+    ],
+    "postToolUseFailure": [
+      {
+        "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\hooks\\r2e-hook-on-postToolUseFailure.ps1",
+        "timeout": 86400
+      }
+    ],
+    "subagentStart": [
+      {
+        "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\hooks\\r2e-hook-on-subagentStart.ps1",
+        "timeout": 86400
+      }
+    ],
+    "subagentStop": [
+      {
+        "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\hooks\\r2e-hook-on-subagentStop.ps1",
+        "timeout": 86400,
+        "loop_limit": 5
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\hooks\\r2e-hook-on-beforeShellExecution.ps1",
+        "timeout": 86400
+      }
+    ],
+    "afterShellExecution": [
+      {
+        "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\hooks\\r2e-hook-on-afterShellExecution.ps1",
+        "timeout": 86400
+      }
+    ],
+    "beforeMCPExecution": [
+      {
+        "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\hooks\\r2e-hook-on-beforeMCPExecution.ps1",
+        "timeout": 86400
+      }
+    ],
+    "afterMCPExecution": [
+      {
+        "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\hooks\\r2e-hook-on-afterMCPExecution.ps1",
+        "timeout": 86400
+      }
+    ],
+    "beforeReadFile": [
+      {
+        "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\hooks\\r2e-hook-on-beforeReadFile.ps1",
+        "timeout": 86400
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\hooks\\r2e-hook-on-afterFileEdit.ps1",
+        "timeout": 86400
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\hooks\\r2e-hook-on-beforeSubmitPrompt.ps1",
+        "timeout": 86400
+      }
+    ],
+    "preCompact": [
+      {
+        "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\hooks\\r2e-hook-on-preCompact.ps1",
+        "timeout": 86400
+      }
+    ],
+    "stop": [
+      {
+        "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\hooks\\r2e-hook-on-stop.ps1",
+        "timeout": 86400
+      }
+    ],
+    "afterAgentResponse": [
+      {
+        "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\hooks\\r2e-hook-on-afterAgentResponse.ps1",
+        "timeout": 86400
+      }
+    ],
+    "afterAgentThought": [
+      {
+        "command": "powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\\hooks\\r2e-hook-on-afterAgentThought.ps1",
+        "timeout": 86400
+      }
+    ],
+    "beforeTabFileRead": [],
+    "afterTabFileEdit": []
+  }
+}

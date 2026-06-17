@@ -1,0 +1,117 @@
+{
+  "version": 1,
+  "hooks": {
+    "sessionStart": [
+      {
+        "command": "bash ./hooks/r2e-hook-run.sh sessionStart",
+        "timeout": 86400,
+        "failClosed": false
+      }
+    ],
+    "sessionEnd": [
+      {
+        "command": "bash ./hooks/r2e-hook-run.sh sessionEnd",
+        "timeout": 86400
+      }
+    ],
+    "preToolUse": [
+      {
+        "command": "bash ./hooks/r2e-hook-run.sh preToolUse",
+        "timeout": 86400
+      }
+    ],
+    "postToolUse": [
+      {
+        "command": "bash ./hooks/r2e-hook-run.sh postToolUse",
+        "timeout": 86400
+      }
+    ],
+    "postToolUseFailure": [
+      {
+        "command": "bash ./hooks/r2e-hook-run.sh postToolUseFailure",
+        "timeout": 86400
+      }
+    ],
+    "subagentStart": [
+      {
+        "command": "bash ./hooks/r2e-hook-run.sh subagentStart",
+        "timeout": 86400
+      }
+    ],
+    "subagentStop": [
+      {
+        "command": "bash ./hooks/r2e-hook-run.sh subagentStop",
+        "timeout": 86400,
+        "loop_limit": 5
+      }
+    ],
+    "beforeShellExecution": [
+      {
+        "command": "bash ./hooks/r2e-hook-run.sh beforeShellExecution",
+        "timeout": 86400
+      }
+    ],
+    "afterShellExecution": [
+      {
+        "command": "bash ./hooks/r2e-hook-run.sh afterShellExecution",
+        "timeout": 86400
+      }
+    ],
+    "beforeMCPExecution": [
+      {
+        "command": "bash ./hooks/r2e-hook-run.sh beforeMCPExecution",
+        "timeout": 86400
+      }
+    ],
+    "afterMCPExecution": [
+      {
+        "command": "bash ./hooks/r2e-hook-run.sh afterMCPExecution",
+        "timeout": 86400
+      }
+    ],
+    "beforeReadFile": [
+      {
+        "command": "bash ./hooks/r2e-hook-run.sh beforeReadFile",
+        "timeout": 86400
+      }
+    ],
+    "afterFileEdit": [
+      {
+        "command": "bash ./hooks/r2e-hook-run.sh afterFileEdit",
+        "timeout": 86400
+      }
+    ],
+    "beforeSubmitPrompt": [
+      {
+        "command": "bash ./hooks/r2e-hook-run.sh beforeSubmitPrompt",
+        "timeout": 86400
+      }
+    ],
+    "preCompact": [
+      {
+        "command": "bash ./hooks/r2e-hook-run.sh preCompact",
+        "timeout": 86400
+      }
+    ],
+    "stop": [
+      {
+        "command": "bash ~/.cursor/plugins/local/r2e/hooks/r2e-hook-run.sh stop",
+        "timeout": 86400
+      }
+    ],
+    "afterAgentResponse": [
+      {
+        "command": "bash ./hooks/r2e-hook-run.sh afterAgentResponse",
+        "timeout": 86400
+      }
+    ],
+    "afterAgentThought": [
+      {
+        "command": "bash ./hooks/r2e-hook-run.sh afterAgentThought",
+        "timeout": 86400
+      }
+    ],
+    "beforeTabFileRead": [],
+    "afterTabFileEdit": []
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "name": "r2e",
+  "description": "ready-to-eat plugin for cross-repo development",
+  "version": "1.0.1",
+  "author": {
+    "name": "unihykes"
+  },
+  "homepage": "https://github.com/unihykes/rdy2e",
+  "repository": "https://github.com/unihykes/rdy2e",
+  "rules": "rules",
+  "agents": "agents",
+  "skills": "skills",
+  "commands": "commands",
+  "hooks": "hooks/hooks.json"
+}
