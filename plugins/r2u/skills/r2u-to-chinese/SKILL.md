@@ -1,6 +1,6 @@
 ---
-name: r2e-cmd-to-chinese
-description: 当用户输入 /r2e-cmd-to-chinese 时触发，将英文或其他非中文内容翻译为简体中文
+name: r2u-to-chinese
+description: 当用户希望将英文或其他非中文内容翻译为简体中文，或显式使用 $r2u-to-chinese 时使用。
 ---
 
 ## 指令(做什么)

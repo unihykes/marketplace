@@ -1,0 +1,8 @@
+interface:
+  display_name: "r2u-to-chinese"
+  short_description: "将英文或其他非中文内容翻译为简体中文。"
+  default_prompt: "Use $r2u-to-chinese to 将以下内容翻译为自然、流畅的简体中文，并保留原文格式。"
+
+policy:
+  allow_implicit_invocation: true
+
