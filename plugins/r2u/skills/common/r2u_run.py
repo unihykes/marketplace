@@ -19,10 +19,11 @@ def r2u_run(skill: str, command: Sequence[str]) -> int:
     log_dir.mkdir(parents=True, exist_ok=True)
     log_path = log_dir / f"{skill}_{datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f')}.log"
 
+    message = "本次命令正在运行；运行期间禁止agent读取本次运行日志原文。"
+    sys.stdout.write(json.dumps({"log_path": str(log_path), "agent_message": message}, ensure_ascii=False) + "\n")
+    sys.stdout.flush()
+
     with log_path.open("w", encoding="utf-8") as out_file:
-        message = "本次命令正在运行；运行期间禁止agent读取本次运行日志原文。"
-        sys.stdout.write(json.dumps({"log_path": str(log_path), "agent_message": message}, ensure_ascii=False) + "\n")
-        sys.stdout.flush()
         completed = subprocess.run(list(command), shell=False, stdout=out_file, stderr=subprocess.STDOUT, text=True)
     exit_code = completed.returncode
     if exit_code == 0:
