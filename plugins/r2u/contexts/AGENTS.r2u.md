@@ -1,9 +1,10 @@
 # 全局
-- 总是用中文回复
-- 修改代码时,禁止更改源码文件的编码格式(例如不允许将utf8修改为GB2312)
+- 所有回复必须使用中文
+- 修改代码时,禁止更改源文件的编码格式(例如, 不得将`UTF‑8`转为`GB2312`或其它编码)
 
-# C++代码风格约束,在生成或者修改C++代码之前,请读取下面的的参考文件(每次会话内只需读一次),并使用文件内描述的风格约束
-- C++代码`命名`风格对齐C++标准库, 详情参考 <R2U_PLUGIN_ROOT>/contexts/r2u_style_naming.md
-- C++代码`格式化`风格对齐C++标准库, 详情参考 <R2U_PLUGIN_ROOT>/contexts/r2u_style_code_formatting.md
-- C++代码`成员函数定义排版`风格, 详情参考 <R2U_PLUGIN_ROOT>/contexts/r2u_style_member_function.md
-- C++代码优先采用较新版本的C++语法和标准库(C++20 优先于更早版本), 详情参考 <R2U_PLUGIN_ROOT>/contexts/r2u_style_modern_cpp.md
+# C++代码规范
+- 在生成或修改C++代码时, `命名风格`必须遵循文档: <R2U_PLUGIN_ROOT>/contexts/r2u_style_naming.md
+- 在生成或修改C++代码时, `格式化风格`必须遵循文档: <R2U_PLUGIN_ROOT>/contexts/r2u_style_code_formatting.md
+- 在生成或修改C++代码时, `成员函数定义排版`必须遵循文档: <R2U_PLUGIN_ROOT>/contexts/r2u_style_member_function.md
+- 在生成或修改C++代码时, 优先采用较新版本的C++语法和标准库, 详情遵循文档: <R2U_PLUGIN_ROOT>/contexts/r2u_style_modern_cpp.md
+
