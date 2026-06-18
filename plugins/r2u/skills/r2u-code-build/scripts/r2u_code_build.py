@@ -53,7 +53,7 @@ def main() -> int:
     parser.add_argument(
         "--logpath",
         required=True,
-        help="由 r2u_create_logfile.py 创建的日志文件路径",
+        help="由 r2u_prerun.py 准备的日志文件路径",
     )
     args = parser.parse_args()
 
