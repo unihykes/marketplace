@@ -5,7 +5,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat SessionStart"
+            "command": "bash ${PLUGIN_ROOT}/hooks/r2u_hook_run.sh SessionStart",
+            "command_windows": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat SessionStart"
           }
         ]
       }
@@ -15,7 +16,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat PreToolUse"
+            "command": "bash ${PLUGIN_ROOT}/hooks/r2u_hook_run.sh PreToolUse",
+            "command_windows": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat PreToolUse"
           }
         ]
       }
@@ -25,7 +27,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat PermissionRequest"
+            "command": "bash ${PLUGIN_ROOT}/hooks/r2u_hook_run.sh PermissionRequest",
+            "command_windows": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat PermissionRequest"
           }
         ]
       }
@@ -35,7 +38,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat PostToolUse",
+            "command": "bash ${PLUGIN_ROOT}/hooks/r2u_hook_run.sh PostToolUse",
+            "command_windows": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat PostToolUse",
             "statusMessage": "Reviewing Bash output"
           }
         ]
@@ -46,7 +50,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat PreCompact"
+            "command": "bash ${PLUGIN_ROOT}/hooks/r2u_hook_run.sh PreCompact",
+            "command_windows": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat PreCompact"
           }
         ]
       }
@@ -56,7 +61,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat PostCompact"
+            "command": "bash ${PLUGIN_ROOT}/hooks/r2u_hook_run.sh PostCompact",
+            "command_windows": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat PostCompact"
           }
         ]
       }
@@ -66,7 +72,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat UserPromptSubmit"
+            "command": "bash ${PLUGIN_ROOT}/hooks/r2u_hook_run.sh UserPromptSubmit",
+            "command_windows": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat UserPromptSubmit"
           }
         ]
       }
@@ -76,7 +83,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat SubagentStart"
+            "command": "bash ${PLUGIN_ROOT}/hooks/r2u_hook_run.sh SubagentStart",
+            "command_windows": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat SubagentStart"
           }
         ]
       }
@@ -86,7 +94,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat SubagentStop"
+            "command": "bash ${PLUGIN_ROOT}/hooks/r2u_hook_run.sh SubagentStop",
+            "command_windows": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat SubagentStop"
           }
         ]
       }
@@ -96,7 +105,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat Stop"
+            "command": "bash ${PLUGIN_ROOT}/hooks/r2u_hook_run.sh Stop",
+            "command_windows": "${PLUGIN_ROOT}\\hooks\\r2u_hook_run.bat Stop"
           }
         ]
       }
