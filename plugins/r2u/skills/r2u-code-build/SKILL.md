@@ -7,7 +7,7 @@ disable-model-invocation: false
 ## 指令(做什么)
 
 - 必须在工作区根目录包含 `cmake/` 的 C++ 工程根目录下执行。
-- 先执行预运行准备命令，并接收返回 JSON 信息，用占位符 `<R2U_OPTIONS>` 接收。
+- 先执行预运行准备命令，并接收返回 JSON 信息，用占位符 `R2U_OPTIONS` 接收。
   `python3 <R2U_PLUGIN_ROOT>/skills/common/r2u_prerun.py --skill r2u_code_build`
 - 将 JSON 信息作为参数直接传递给构建脚本。
   `python3 <R2U_PLUGIN_ROOT>/skills/r2u-code-build/scripts/r2u_code_build.py --options=<R2U_OPTIONS> --module <相对路径> --kind=<debug | release>`
