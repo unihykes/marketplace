@@ -50,6 +50,11 @@ def main() -> int:
         metavar="debug|release",
         help="debug 或 release（忽略大小写；默认 debug）",
     )
+    parser.add_argument(
+        "--logpath",
+        required=True,
+        help="由 r2u_create_logfile.py 创建的日志文件路径",
+    )
     args = parser.parse_args()
 
     try:
@@ -58,7 +63,7 @@ def main() -> int:
         sys.stderr.write(f"{e}\n")
         return 1
 
-    return r2u_run(Path(__file__).stem, command)
+    return r2u_run(Path(__file__).stem, command, args.logpath)
 
 
 if __name__ == "__main__":
