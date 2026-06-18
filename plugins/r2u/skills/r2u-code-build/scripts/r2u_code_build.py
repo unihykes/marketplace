@@ -2,9 +2,26 @@
 from __future__ import annotations
 
 import argparse
+import json
 import shlex
 import sys
 from pathlib import Path
+
+
+def parse_options(options: str) -> str:
+    try:
+        data = json.loads(options)
+    except json.JSONDecodeError as e:
+        raise ValueError(f"--options 必须为 r2u_prerun.py 返回的 JSON：{e}") from e
+
+    if not isinstance(data, dict):
+        raise ValueError("--options 必须为 JSON 对象")
+
+    log_path = data.get("log_path")
+    if not isinstance(log_path, str) or not log_path:
+        raise ValueError("--options JSON 中必须包含非空字符串字段 log_path")
+
+    return log_path
 
 
 def create_command(kind: str, module: str) -> list[str]:
@@ -51,19 +68,20 @@ def main() -> int:
         help="debug 或 release（忽略大小写；默认 debug）",
     )
     parser.add_argument(
-        "--logpath",
+        "--options",
         required=True,
-        help="由 r2u_prerun.py 准备的日志文件路径",
+        help="由 r2u_prerun.py 返回的 JSON 信息",
     )
     args = parser.parse_args()
 
     try:
+        log_path = parse_options(args.options)
         command = create_command(args.kind, args.module)
     except ValueError as e:
         sys.stderr.write(f"{e}\n")
         return 1
 
-    return r2u_run(Path(__file__).stem, command, args.logpath)
+    return r2u_run(Path(__file__).stem, command, log_path)
 
 
 if __name__ == "__main__":
