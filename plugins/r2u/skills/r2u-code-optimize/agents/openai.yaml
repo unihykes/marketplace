@@ -4,5 +4,5 @@ interface:
   default_prompt: "Use $r2u-code-optimize to C++ 代码优化编排技能，在用户要求代码优化、代码清理或降噪整理时使用"
 
 policy:
-  allow_implicit_invocation: false
+  allow_implicit_invocation: true
 

@@ -9,13 +9,13 @@ from pathlib import Path
 from typing import Sequence
 
 
-def r2e_run(skill: str, command: Sequence[str]) -> int:
-    """在 ``.cursor/log`` 下记录日志并运行 ``command``；返回进程退出码。"""
+def r2u_run(skill: str, command: Sequence[str]) -> int:
+    """在 ``.codex/logs`` 下记录日志并运行 ``command``；返回进程退出码。"""
     if not command:
-        sys.stderr.write("r2e_run: command must be non-empty\n")
+        sys.stderr.write("r2u_run: command must be non-empty\n")
         return 2
 
-    log_dir = Path.cwd().resolve() / ".cursor" / "log"
+    log_dir = Path.cwd().resolve() / ".codex" / "logs"
     log_dir.mkdir(parents=True, exist_ok=True)
     log_path = log_dir / f"{skill}_{datetime.now().strftime('%Y-%m-%d-%H-%M-%S-%f')}.log"
 

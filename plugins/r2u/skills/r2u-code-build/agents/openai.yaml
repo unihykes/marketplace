@@ -1,0 +1,7 @@
+interface:
+  display_name: "r2u-code-build"
+  short_description: "C++ 代码构建，在用户要求 code build 时使用"
+  default_prompt: "Use $r2u-code-build to C++ 代码构建，在用户要求 code build 时使用"
+
+policy:
+  allow_implicit_invocation: true

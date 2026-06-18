@@ -1,14 +1,14 @@
 ---
-name: r2e-code-build
+name: r2u-code-build
 description: C++ 代码构建，在用户要求 code build 时使用
 disable-model-invocation: false
 ---
 
 ## 指令(做什么)
 
-- 须在工作区根为含 `cmake/` 的 C++ 工程根目录下执行。
+- 须在工作区根目录包含 `cmake/` 的 C++ 工程根目录下执行。
 
-  `python3 <技能路径>/scripts/r2e_code_build.py --module <相对路径> --kind=<debug | release>`
+  `python3 <R2U_PLUGIN_ROOT>/skills/r2u-code-build/scripts/r2u_code_build.py --module <相对路径> --kind=<debug | release>`
 
 - `--module` 与 `--kind` 均可省略、顺序任意。
 - 省略 `--module`（或为空）表示编译全部模块；
