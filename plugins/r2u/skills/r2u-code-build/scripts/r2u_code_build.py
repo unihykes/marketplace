@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import platform
 import shlex
 import sys
 from pathlib import Path
@@ -24,6 +25,16 @@ def parse_options(options: str) -> str:
     return log_path
 
 
+def detect_abplatform() -> str:
+    machine = platform.machine().strip().lower()
+    if machine in ("aarch64", "arm64") or machine.startswith("arm"):
+        return "Linux_el7a3_aarcj64"
+    if machine in ("x86_64", "amd64", "i386", "i686", "x86") or "x86" in machine:
+        return "Linux_el7a3_x64"
+
+    raise ValueError(f"不支持的 CPU 架构：{platform.machine()!r}")
+
+
 def create_command(kind: str, module: str) -> list[str]:
     """生成待执行命令。
     :param kind: ``debug`` 或 ``release``（对应命令行 ``--kind``，忽略大小写），追加到 ``makec.sh -j8`` 之后。
@@ -37,9 +48,10 @@ def create_command(kind: str, module: str) -> list[str]:
         raise ValueError("仅支持项目内相对路径（不得为绝对路径）")
 
     project_root = Path.cwd().resolve()
+    abplatform = detect_abplatform()
     script = (
         "set -eo pipefail && "
-        'ABPLATFORM="Linux_el7a3_x64" &&'
+        f'ABPLATFORM="{abplatform}" && '
         f"PROJECT_ROOT={shlex.quote(str(project_root))} && "
         f"MODULE_PATH={shlex.quote(module)} && "
         f"cd {shlex.quote(str(project_root / 'cmake'))} && "
