@@ -1,6 +1,6 @@
 ---
 name: r2u-code-build
-description: C++ 代码构建，在用户要求 code build 时使用
+description: C++ 代码构建，在用户希望编译全部或部分模块, 或提到makec/编译/构建/code build 时使用
 disable-model-invocation: false
 ---
 
@@ -9,7 +9,7 @@ disable-model-invocation: false
 - 必须在工作区根目录包含 `cmake/` 的 C++ 工程根目录下执行。
 
 #### 1.执行 `r2u_prerun` 脚本
-```shell
+```bash
   `R2U_OPTIONS="$(python3 <R2U_PLUGIN_ROOT>/skills/common/r2u_prerun.py --skill r2u_code_build)"`
 ```
 - 执行`prerun`命令结束后，必须立即向用户原样输出 `${R2U_OPTIONS}`
