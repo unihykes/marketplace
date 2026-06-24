@@ -1,4 +1,4 @@
-﻿---
+---
 name: r2u-install-plantuml
 description: Install the local PlantUML runtime. Use when the user asks to install, prepare, or configure PlantUML, or when Java, Graphviz, and the PlantUML JAR are needed for local rendering of .puml, .plantuml, or UML diagrams.
 ---
