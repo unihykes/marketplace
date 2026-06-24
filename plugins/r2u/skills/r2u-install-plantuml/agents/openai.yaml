@@ -1,4 +1,4 @@
-﻿interface:
+interface:
   display_name: "r2u-install-plantuml"
   short_description: "Install Java, Graphviz, and PlantUML JAR"
   default_prompt: "Use $r2u-install-plantuml to install Java, Graphviz, and the latest PlantUML JAR"
