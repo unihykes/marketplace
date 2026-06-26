@@ -13,6 +13,14 @@ from typing import AbstractSet, Any, Dict, Optional, Tuple
 RUNTIME_DIR = Path(__file__).resolve().parent
 
 
+def read_stdin_utf8() -> str:
+    """按 Codex hook 约定读取 UTF-8 stdin，避免 Windows locale 预解码成乱码。"""
+    stdin_buffer = getattr(sys.stdin, "buffer", None)
+    if stdin_buffer is None:
+        return sys.stdin.read()
+    return stdin_buffer.read().decode("utf-8", errors="replace")
+
+
 def pretty_uuid(id_val: Any) -> str:
     """将 ID 简写为首段，便于日志展示。"""
     if id_val is None:
@@ -189,7 +197,7 @@ def get_hook_input_head_and_body(raw_input: Optional[str] = None) -> Tuple[R2eHo
     """解析 Hook 输入并拆分手部信息与正文字符串。"""
     head = R2eHookInputHead()
     if raw_input is None:
-        raw_input = sys.stdin.read()
+        raw_input = read_stdin_utf8()
     raw_input = raw_input.lstrip("\ufeff")
     body_str = raw_input
 
