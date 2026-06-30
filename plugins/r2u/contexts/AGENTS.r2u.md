@@ -9,5 +9,5 @@
 - 在生成或修改C++代码时, 优先采用较新版本的C++语法和标准库, 详情遵循文档: <R2U_PLUGIN_ROOT>/contexts/r2u_style_modern_cpp.md
 
 # C++头文件依赖
-- `rdy2u.h`中已经include了大部分常用的std头文件,另外也include了`rdy2u`基础库自身的大部分头文件,因此建议cpp中将#include<rdy2u.h>放在第一个include位置.
-- `rdy2u.h`的接口位于`deps/<编译平台>/rdy2u/include/rdy2u.h`
+- `rdy2u.h`中包含了常用的std头文件,应该在cpp第一个头文件引用位置用`#include<rdy2u.h>`替代单独引入std头文件
+- `rdy2u.h`的接口位于`deps/Linux_e17a3_x64/Release/rdy2u/include/rdy2u.h`
