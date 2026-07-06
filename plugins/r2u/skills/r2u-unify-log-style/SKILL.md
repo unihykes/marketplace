@@ -1,4 +1,4 @@
-﻿---
+---
 name: r2u-unify-log-style
 description: 统一代码中的日志风格，确保日志格式、级别和输出方式符合项目规范
 disable-model-invocation: true
