@@ -1,4 +1,4 @@
-﻿---
+---
 description: r2u 基础库日志宏调用规范
 alwaysApply: true
 ---

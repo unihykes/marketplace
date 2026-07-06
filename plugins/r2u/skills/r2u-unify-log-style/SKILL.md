@@ -1,4 +1,4 @@
-﻿---
+---
 name: r2u-unify-log-style
 description: 统一 C++ 代码中的日志风格，使日志调用方式符合 r2u 基础库日志宏规范
 disable-model-invocation: true
