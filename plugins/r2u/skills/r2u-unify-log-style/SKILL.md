@@ -1,41 +1,38 @@
----
+﻿---
 name: r2u-unify-log-style
-description: 统一代码中的日志风格，确保日志格式、级别和输出方式符合项目规范
+description: 统一 C++ 代码中的日志风格，使日志调用方式符合 r2u 基础库日志宏规范
 disable-model-invocation: true
 ---
 
 ## 指令(做什么)
 
 - 扫描用户指定位置的代码文件。
-- 检查日志语句的风格一致性（格式字符串、参数传递方式）。
-- 识别不符合项目日志规范的写法并给出修正建议。
+- 检查日志调用是否符合 r2u 基础库日志宏规范（见 <R2U_PLUGIN_ROOT>/contexts/r2u_style_logging.md）。
+- 识别不符合规范的写法并逐条给出修正建议。
 - 在用户确认后可直接修改代码以统一日志风格。
 
 ## 约束(怎么做)
 
-- 仅适用于C++ 文件（h/hpp/cpp）;
-- 在代码内输出日志时优先使用r2u基础库提供的日志宏:r2u_debug, r2u_info, r2u_warn,_r2u_error;
-- 日志宏的格式如下:
-    r2u_info("do something", var1, var2, var2);
-    其中第1个参数固定为消息事件,不要使用任何的格式化字符(%或者{}等), 消息事件中不需要主动写变量列表.消息事件最好是一个自然语句.
-    第2个至N个参数是可选参数,表示变量列表,r2u宏会通过编译时反射自动将其变量名称以json格式输出在日志中
-    例如上述日志输出内容是 [2026-07-06 12:09:00 300689 +08:00] [demo] [592272] [592272] [info] [demo.cpp:10] test() do something {"var1": 1, "var2", 2, "var3": 3}
-    r2u_info宏的变量列表接受大部分原始类型,不需要做fmt::ptr(xxx)转换
-    如果变量列表是函数调用或者比较长,可以使用r2u_named给变量重命名以便精简输出.
+- [范围] C++ 文件（h/hpp/cpp）。
+- [命中] 日志消息中包含格式化占位符（`{}`、`%s`、`%d` 等），应去除占位符并将对应变量移入后续参数列表。
+- [命中] 使用 `_T()` 宏包裹日志消息字符串，应去除 `_T()` 并使用普通字符串字面量。
+- [命中] 对变量手动调用了格式化转换函数（如 `fmt::ptr()`、`.c_str()`、`.toFullString()` 等），应直接传入原始变量或改用 `r2u_named`。
+- [命中] 日志消息中手动拼写了变量名（如 `"var[{}]"`），应从消息中移除变量名，由反射自动输出。
+- [命中] 长表达式或函数调用作为日志参数时未使用 `r2u_named` 命名，应补充 `r2u_named`。
+- [排除] 第三方库或外部依赖中的日志代码不标记。
+- [排除] 测试代码中的临时日志或调试输出可酌情忽略。
+- [排除] 已通过审查且完全符合规范的日志调用不标记。
 
-## 示例
-- 当用户指定位置代码文件内日志文件不符合r2u格式时进行整改.
-例1:
-r2u_info("this[{}], mUpdateTimestamp[{}], mSwanUnitCreatePolling[{}]", (void *)this, mUpdateTimestamp, mSwanUnitCreatePolling);
-需要整改为:
-r2u_info("", this, mUpdateTimestamp, mSwanUnitCreatePolling);
+## 输出
 
-例2:
-r2u_error("init sam kv lun for storePool[{}] exception[{}]", getStorePoolInfo(storePoolInfo), e.toFullString());
-需要整改为:
-r2u_error("init sam kv lun", r2u_named(pool, getStorePoolInfo(storePoolInfo)), r2u_named(error, e.toFullString()));
+- 逐个输出所有扫描到的文件（不得省略）。
+- 无结果时，输出：`<路径>: ok`
+- 有结果时，输出：
 
-例3:
-r2u_error(_T("storePoolID[%s] not found."), storePoolID.c_str());
-需要整改为
-r2u_error("store pool not found.", storePoolID);
+```
+<路径>: <行号[,行号...]>
+  - 问题: <问题描述>
+  - 建议: <修正后的日志写法>
+```
+
+- 同一文件有多类问题时，按问题分条重复输出该文件路径。
