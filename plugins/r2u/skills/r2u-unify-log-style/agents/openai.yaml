@@ -1,0 +1,7 @@
+﻿interface:
+  display_name: "r2u-unify-log-style"
+  short_description: "统一代码中的日志风格，确保日志格式、级别和输出方式符合项目规范"
+  default_prompt: "Use $r2u-unify-log-style to 统一代码中的日志风格，确保日志格式、级别和输出方式符合项目规范"
+
+policy:
+  allow_implicit_invocation: false
